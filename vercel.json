@@ -12,6 +12,14 @@
     ],
     "rewrites": [
         {
+            "source": "/build/(.*)",
+            "destination": "/public/build/$1"
+        },
+        {
+            "source": "/(favicon\\.ico|favicon\\.jpg|favicon\\.png|robots\\.txt)",
+            "destination": "/public/$1"
+        },
+        {
             "source": "/(.*)",
             "destination": "/api/index.php"
         }

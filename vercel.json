@@ -4,24 +4,20 @@
         {
             "src": "api/index.php",
             "use": "vercel-php@0.6.2"
-        },
-        {
-            "src": "public/**",
-            "use": "@vercel/static"
         }
     ],
-    "rewrites": [
+    "routes": [
         {
-            "source": "/build/(.*)",
-            "destination": "/public/build/$1"
+            "src": "/build/(.*)",
+            "dest": "/public/build/$1"
         },
         {
-            "source": "/(favicon\\.ico|favicon\\.jpg|favicon\\.png|robots\\.txt)",
-            "destination": "/public/$1"
+            "src": "/(favicon\\.ico|favicon\\.jpg|favicon\\.png|robots\\.txt)",
+            "dest": "/public/$1"
         },
         {
-            "source": "/(.*)",
-            "destination": "/api/index.php"
+            "src": "/(.*)",
+            "dest": "/api/index.php"
         }
     ],
     "env": {

@@ -249,7 +249,6 @@ web-kantin-smecone/
 
 <div align="center">
 
-  Dibuat dengan ❤️ untuk kemajuan digitalisasi **SMKN 1 Purwokerto**.
 
   &copy; 2026 E-Kantin. All rights reserved.
 

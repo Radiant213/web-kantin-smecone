@@ -55,9 +55,9 @@ Pesanan masuk tidak akan pernah terlewat! Berkat integrasi **Service Worker** da
 
 ### 🎨 UI/UX Modern & Responsif
 Dibangun dengan kombinasi **Tailwind CSS** dan **Alpine.js**, antarmuka E-Kantin sangat *fluid*:
-- 🌓 Dukungan **Dark Mode** secara global (mengikuti sistem OS atau toggle manual).
-- ✨ Transisi komponen dan animasi *micro-interactions* di setiap elemen interaktif.
-- 📱 Desain **mobile-first** yang mulus diakses di smartphone, tablet, maupun desktop.
+- Dukungan **Dark Mode** secara global (mengikuti sistem OS atau toggle manual).
+- Transisi komponen dan animasi *micro-interactions* di setiap elemen interaktif.
+- Desain **mobile-first** yang mulus diakses di smartphone, tablet, maupun desktop.
 
 ---
 

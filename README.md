@@ -38,9 +38,9 @@ Setiap pengguna memiliki *dashboard* dan fungsi yang disesuaikan dengan perannya
 
 | Role | Kemampuan Utama |
 |------|----------------|
-| **🛡️ Admin** | Memantau statistik keseluruhan platform, menyetujui/menolak pendaftaran kios baru, manajemen pengguna, dan melihat *activity log*. |
-| **🏪 Penjual** | Mengelola katalog menu kios secara mandiri (CRUD), menerima pesanan masuk *real-time*, dan memperbarui status setiap *order*. |
-| **🛒 Pembeli** | Mengeksplorasi daftar kantin & kios, memasukkan pesanan ke keranjang belanja, melakukan checkout, dan memantau status pesanan secara *live*. |
+| **Admin** | Memantau statistik keseluruhan platform, menyetujui/menolak pendaftaran kios baru, manajemen pengguna, dan melihat *activity log*. |
+| **Penjual** | Mengelola katalog menu kios secara mandiri (CRUD), menerima pesanan masuk *real-time*, dan memperbarui status setiap *order*. |
+| **Pembeli** | Mengeksplorasi daftar kantin & kios, memasukkan pesanan ke keranjang belanja, melakukan checkout, dan memantau status pesanan secara *live*. |
 
 ### ⚡ Notifikasi Real-Time & Auto-Refresh (WebSockets)
 Menggunakan **Pusher Channels**, aplikasi ini mendukung komunikasi dua arah tanpa jeda:

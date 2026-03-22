@@ -8,4 +8,7 @@ window.Alpine = Alpine;
 Alpine.start();
 
 // Initialize Vercel Web Analytics
-inject();
+inject({
+    mode: import.meta.env.MODE === 'production' ? 'production' : 'development',
+    debug: import.meta.env.MODE === 'development'
+});

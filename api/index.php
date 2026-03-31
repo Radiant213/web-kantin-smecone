@@ -10,6 +10,5 @@ foreach ($tempDirectories as $dir) {
         mkdir($dir, 0777, true);
     }
 }
-
 // Meneruskan request ke public/index.php bawaan Laravel
 require __DIR__ . '/../public/index.php';

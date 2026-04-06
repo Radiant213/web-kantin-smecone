@@ -15,25 +15,39 @@
   ],
   "routes": [
     {
-      "src": "/build/(.*)",
-      "dest": "/public/build/$1"
+      "src": "/(css|js|images|sounds|storage)/(.+)",
+      "dest": "public/$1/$2"
     },
     {
-      "src": "/storage/(.*)",
-      "dest": "/public/storage/$1"
+      "src": "/build/(.+)",
+      "dest": "public/build/$1"
     },
     {
-      "src": "/(.*\\.(css|js|json|ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|mp3))",
-      "dest": "/public/$1"
+      "src": "/(.*\\.(ico|png|jpg|jpeg|gif|svg|mp3|webp))",
+      "dest": "public/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/api/index.php"
+      "dest": "api/index.php"
     }
   ],
   "env": {
     "APP_ENV": "production",
     "APP_DEBUG": "false",
-    "BROADCAST_CONNECTION": "pusher"
+    "APP_CONFIG_CACHE": "/tmp/config.php",
+    "APP_EVENTS_CACHE": "/tmp/events.php",
+    "APP_PACKAGES_CACHE": "/tmp/packages.php",
+    "APP_ROUTES_CACHE": "/tmp/routes.php",
+    "APP_SERVICES_CACHE": "/tmp/services.php",
+    "VIEW_COMPILED_PATH": "/tmp",
+    "CACHE_DRIVER": "array",
+    "LOG_CHANNEL": "stderr",
+    "SESSION_DRIVER": "cookie"
+  },
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.7.1",
+      "maxDuration": 30
+    }
   }
 }

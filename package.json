@@ -5,7 +5,7 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "vercel-build": "vite build"
+        "vercel-build": "vite build && echo 'Build complete'"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",

@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "npm run vercel-build",
+  "installCommand": "npm install",
   "functions": {
     "api/*.php": {
       "runtime": "vercel-php@0.7.1"

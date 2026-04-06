@@ -1,6 +1,10 @@
 {
   "version": 2,
-  "outputDirectory": "public",
+  "functions": {
+    "api/*.php": {
+      "runtime": "vercel-php@0.7.1"
+    }
+  },
   "routes": [
     {
       "src": "/(css|js|images|sounds|storage)/(.+)",

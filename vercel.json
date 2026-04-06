@@ -1,18 +1,5 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/index.php",
-      "use": "vercel-php@0.7.1"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "public"
-      }
-    }
-  ],
   "routes": [
     {
       "src": "/(css|js|images|sounds|storage)/(.+)",
@@ -43,11 +30,5 @@
     "CACHE_DRIVER": "array",
     "LOG_CHANNEL": "stderr",
     "SESSION_DRIVER": "cookie"
-  },
-  "functions": {
-    "api/index.php": {
-      "runtime": "vercel-php@0.7.1",
-      "maxDuration": 30
-    }
   }
 }

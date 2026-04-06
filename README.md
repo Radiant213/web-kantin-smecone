@@ -253,4 +253,3 @@ web-kantin-smecone/
   &copy; 2026 E-Kantin. All rights reserved.
 
 </div>
-

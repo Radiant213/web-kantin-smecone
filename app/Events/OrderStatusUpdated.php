@@ -22,6 +22,18 @@ class OrderStatusUpdated implements ShouldBroadcastNow
     {
         $this->order = $order;
         $this->message = $message ?? 'Status pesanan Anda telah diperbarui menjadi: ' . str_replace('_', ' ', $order->status);
+        
+        // Log event broadcast in development environment
+        if (config('app.debug')) {
+            \Log::info('OrderStatusUpdated event broadcasting', [
+                'event' => 'OrderStatusUpdated',
+                'channel' => 'user.' . $order->user_id,
+                'order_id' => $order->id,
+                'user_id' => $order->user_id,
+                'status' => $order->status,
+                'message' => $this->message,
+            ]);
+        }
     }
 
     public function broadcastOn(): array

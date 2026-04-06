@@ -23,6 +23,19 @@ class OrderMasuk implements ShouldBroadcastNow
     public function __construct(Order $order)
     {
         $this->order = $order;
+        
+        // Log event broadcast in development environment
+        if (config('app.debug')) {
+            \Log::info('OrderMasuk event broadcasting', [
+                'event' => 'OrderMasuk',
+                'channel' => 'kios.' . $order->kiosk_id,
+                'order_id' => $order->id,
+                'kiosk_id' => $order->kiosk_id,
+                'user_id' => $order->user_id,
+                'status' => $order->status,
+                'total' => $order->total,
+            ]);
+        }
     }
 
     /**

@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
             },
         },
         build: {
-            manifest: true,
+            manifest: 'manifest.json',
             outDir: 'public/build',
             rollupOptions: {
                 input: {

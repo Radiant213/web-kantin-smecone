@@ -7,7 +7,8 @@
     <meta name="vapid-pub-key" content="{{ config('app.vapid_public_key', env('VAPID_PUBLIC_KEY')) }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="E-Kantin SMKN 1 Purwokerto - Jajan Gampang, Perut Kenyang">
-
+    <meta name="keywords" content="kantin smknegeri 1 purwokerto, kantin smkn 1 purwokerto, e-kantin smkn 1 purwokerto, jajan online smkn 1 purwokerto, kantin online smecone">
+    <meta name="author" content="SMKN 1 Purwokerto">
     <title>{{ config('app.name', 'E-Kantin') }} - @yield('title', 'Home')</title>
 
     <link rel="icon" type="image/jpeg" href="{{ asset('favicon.jpg') }}?v=2">

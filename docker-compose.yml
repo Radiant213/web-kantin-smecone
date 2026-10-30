@@ -1,0 +1,83 @@
+services:
+  kantin-app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: kantin-app
+    restart: unless-stopped
+    working_dir: /var/www/kantin
+    volumes:
+      - ./:/var/www/kantin
+    depends_on:
+      - kantin-db
+    networks:
+      - kantin-net
+
+  kantin-reverb:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: kantin-reverb
+    restart: unless-stopped
+    working_dir: /var/www/kantin
+    command: php artisan reverb:start --host=0.0.0.0 --port=8080
+    volumes:
+      - ./:/var/www/kantin
+    depends_on:
+      - kantin-app
+    networks:
+      - kantin-net
+
+  kantin-queue:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: kantin-queue
+    restart: unless-stopped
+    working_dir: /var/www/kantin
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - ./:/var/www/kantin
+    depends_on:
+      - kantin-db
+      - kantin-app
+    networks:
+      - kantin-net
+
+  kantin-web:
+    image: nginx:alpine
+    container_name: kantin-web
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www/kantin:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - kantin-app
+      - kantin-reverb
+    networks:
+      - kantin-net
+      - proxy-net
+
+  kantin-db:
+    image: mariadb:11
+    container_name: kantin-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-db_kantin}
+      MYSQL_USER: ${DB_USERNAME:-kantin_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-kantin_secret_2026}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-kantin_root_secret_2026}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - kantin-net
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  kantin-net:
+    driver: bridge
+  proxy-net:
+    external: true

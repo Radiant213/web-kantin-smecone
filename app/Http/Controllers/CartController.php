@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\Order;
+use App\Services\MidtransService;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -14,7 +16,7 @@ class CartController extends Controller
         $total = 0;
 
         foreach ($cart as $menuId => $qty) {
-            $menu = Menu::with('kiosk')->find($menuId);
+            $menu = Menu::with('kiosk.kantin')->find($menuId);
             if ($menu) {
                 $subtotal = $menu->price * $qty;
                 $items[] = [
@@ -48,7 +50,7 @@ class CartController extends Controller
 
         session()->put('cart', $cart);
 
-        return back()->with('success', 'Item ditambahkan ke keranjang!');
+        return back()->with('success', 'Menu berhasil ditambahkan ke baki pesanan!');
     }
 
     public function remove($menuId)
@@ -62,10 +64,15 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
+        $request->validate([
+            'pickup_session' => 'required|in:istirahat_1,istirahat_2',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {
-            return back()->with('error', 'Keranjang kosong!');
+            return back()->with('error', 'Keranjang pesanan masih kosong!');
         }
 
         // Group items by kiosk
@@ -84,17 +91,27 @@ class CartController extends Controller
             }
         }
 
-        // Create orders per kiosk
+        $midtransService = new MidtransService();
+        $createdOrders = [];
+
         foreach ($kioskOrders as $kioskId => $items) {
             $totalPrice = 0;
             foreach ($items as $item) {
                 $totalPrice += $item['menu']->price * $item['quantity'];
             }
 
+            // Generate clean school order code
+            $randomDigits = str_pad(mt_rand(1, 999), 3, '0', STR_PAD_LEFT);
+            $orderCode = 'SMC-' . date('md') . '-' . $randomDigits;
+
             $order = $request->user()->orders()->create([
+                'order_code' => $orderCode,
                 'kiosk_id' => $kioskId,
                 'total_price' => $totalPrice,
                 'status' => 'pending',
+                'payment_status' => 'unpaid',
+                'pickup_session' => $request->pickup_session,
+                'notes' => $request->notes,
             ]);
 
             foreach ($items as $item) {
@@ -105,26 +122,25 @@ class CartController extends Controller
                 ]);
             }
 
-            // Broadcast real-time order notification (WebSocket)
-            \App\Events\OrderMasuk::dispatch($order);
-
-            // Send Web Push Notification (Background)
-            $kioskOwnerId = $order->kiosk->user_id;
-            try {
-                $pushService = new \App\Services\WebPushService();
-                $pushService->sendToUser($kioskOwnerId, [
-                    'title' => '🔔 Pesanan Baru!',
-                    'body' => 'Subtotal: Rp ' . number_format($order->total_price, 0, ',', '.'),
-                    'url' => route('penjual.orders.index'),
-                    'tag' => 'order-' . $order->id,
-                ]);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('WebPush Error: ' . $e->getMessage());
+            // Request Midtrans Snap Token
+            $snapToken = $midtransService->createSnapToken($order);
+            if ($snapToken) {
+                $order->update(['snap_token' => $snapToken]);
             }
+
+            $createdOrders[] = $order;
         }
 
         session()->forget('cart');
 
-        return redirect()->route('orders.index')->with('success', 'Pesanan berhasil dibuat!');
+        // Pass created order and snap token to checkout page
+        $firstOrder = $createdOrders[0] ?? null;
+        if ($firstOrder && $firstOrder->snap_token) {
+            return redirect()->route('orders.index', ['pay_order_id' => $firstOrder->id])
+                ->with('success', 'Pesanan dibuat! Silakan selesaikan pembayaran QRIS.');
+        }
+
+        return redirect()->route('orders.index')
+            ->with('success', 'Pesanan berhasil dibuat!');
     }
 }

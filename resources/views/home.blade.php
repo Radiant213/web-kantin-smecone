@@ -3,121 +3,193 @@
 @section('title', 'Beranda')
 
 @section('content')
-    {{-- ═══ Hero Section ═══ --}}
-    <section class="relative overflow-hidden bg-gradient-to-br from-primary-500 via-primary-400 to-amber-400">
-        <div class="absolute inset-0">
-            <div class="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-            <div class="absolute bottom-10 right-10 w-96 h-96 bg-yellow-300/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-            <div class="absolute top-1/2 left-1/2 w-64 h-64 bg-orange-300/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
-        </div>
+    {{-- ═══ Campus Hero Bento ═══ --}}
+    <section class="relative overflow-hidden bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 text-white">
+        <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
-            <div class="text-center">
-                <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-                    <span class="w-3 h-3 rounded-full border-2 border-white border-t-white/20 border-r-white/20 animate-spin-blink"></span>
-                    <span class="text-white/90 text-sm font-medium">SMKN 1 Purwokerto</span>
-                </div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                {{-- Left Text Banner --}}
+                <div class="lg:col-span-7 space-y-5">
+                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-3.5 py-1.5 border border-white/15">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-xs font-semibold text-white/90 tracking-wide">Kantin Buka • Pre-Order Siap</span>
+                    </div>
 
-                <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white mb-6 leading-tight">
-                    Jajan Gampang,<br>
-                    <span class="text-yellow-200">Perut Kenyang</span>
-                </h1>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
+                        Jajan Tenang, <br>
+                        <span class="text-amber-400">Tepat Saat Bel Berdentang.</span>
+                    </h1>
 
-                <p class="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10">
-                    Pesan makanan favoritmu dari kantin sekolah dengan mudah.<br class="hidden md:block">
-                    Tinggal pilih, pesan, dan ambil!
-                </p>
+                    <p class="text-sm sm:text-base text-slate-200 max-w-xl leading-relaxed">
+                        Pesan makanan favoritmu dari kelas sebelum jam istirahat. Begitu bel berbunyi, langsung ambil di loket baki kios tanpa perlu desak-desakan mengantre.
+                    </p>
 
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="#kantin" class="group inline-flex items-center gap-2 bg-white text-primary-600 font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
-                        <span>Lihat Kantin</span>
-                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                        </svg>
-                    </a>
-                    @guest
-                        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white font-bold px-8 py-4 rounded-2xl border-2 border-white/30 hover:bg-white/30 transition-all duration-300">
-                            Daftar Sekarang
-                        </a>
-                    @endguest
-                </div>
-            </div>
-        </div>
-
-        {{-- Wave separator --}}
-        <div class="absolute bottom-0 left-0 right-0">
-            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#F9FAFB"/>
-            </svg>
-        </div>
-    </section>
-
-    {{-- ═══ Pilih Kantin Section ═══ --}}
-    <section id="kantin" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div class="text-center mb-12">
-            <span class="inline-block bg-primary-100 text-primary-600 text-sm font-semibold px-4 py-1 rounded-full mb-4">Kantin Tersedia</span>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Pilih Kantin</h2>
-            <p class="text-gray-500 max-w-xl mx-auto">Jelajahi berbagai kantin yang tersedia di SMKN 1 Purwokerto dan temukan makanan favoritmu.</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            @foreach($kantins as $kantin)
-                <a href="{{ route('kantin.show', $kantin) }}" class="group card-hover">
-                    {{-- Image --}}
-                    <div class="relative h-48 md:h-56 bg-gradient-to-br from-primary-100 to-primary-200 overflow-hidden">
-                        @if($kantin->image)
-                            <img src="{{ asset('storage/' . $kantin->image) }}" alt="{{ $kantin->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        @else
-                            <div class="w-full h-full flex items-center justify-center">
-                                <svg class="w-16 h-16 text-primary-300 group-hover:scale-110 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                </svg>
-                            </div>
-                        @endif
-                        <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-semibold text-primary-600">
-                            {{ $kantin->kiosks_count }} Kios
+                    {{-- Time Slot Pills --}}
+                    <div class="flex flex-wrap gap-2.5 pt-1">
+                        <div class="flex items-center gap-2 bg-black/20 backdrop-blur-sm border border-white/10 px-3.5 py-2 rounded-xl text-xs">
+                            <span class="text-amber-400 font-bold">Istirahat 1:</span>
+                            <span class="text-slate-200 font-medium">09:45 - 10:15 WIB</span>
+                        </div>
+                        <div class="flex items-center gap-2 bg-black/20 backdrop-blur-sm border border-white/10 px-3.5 py-2 rounded-xl text-xs">
+                            <span class="text-amber-400 font-bold">Istirahat 2:</span>
+                            <span class="text-slate-200 font-medium">12:00 - 12:45 WIB</span>
                         </div>
                     </div>
 
-                    {{-- Info --}}
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold text-gray-800 group-hover:text-primary-500 transition-colors mb-2">{{ $kantin->name }}</h3>
-                        <p class="text-sm text-gray-500 line-clamp-2">{{ $kantin->description ?? 'Jelajahi aneka kuliner di kantin ini.' }}</p>
-
-                        <div class="mt-4 flex items-center gap-2 text-primary-500 font-semibold text-sm">
-                            <span>Lihat Kios</span>
-                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
+                    {{-- CTAs --}}
+                    <div class="flex flex-wrap items-center gap-3 pt-3">
+                        <a href="#zona-kantin" 
+                           class="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-6 py-3 rounded-xl transition-all shadow-md hover:scale-[1.02]">
+                            <span>Pilih Kantin</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </a>
+                        <div class="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/15 text-xs text-white/90 font-medium">
+                            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span>Full Cashless • QRIS Midtrans</span>
                         </div>
+                    </div>
+                </div>
+
+                {{-- Right Bento Card: Quick Info --}}
+                <div class="lg:col-span-5">
+                    <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 space-y-4 shadow-xl">
+                        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+                            <div>
+                                <h3 class="text-sm font-bold text-white">Status Layanan Digital</h3>
+                                <p class="text-xs text-slate-300">SMK Negeri 1 Purwokerto</p>
+                            </div>
+                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                Real-Time Aktif
+                            </span>
+                        </div>
+
+                        <div class="space-y-2.5 text-xs">
+                            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+                                <span class="text-slate-300">Estimasi Masak</span>
+                                <span class="font-bold text-white">⚡ 5 - 10 Menit</span>
+                            </div>
+                            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+                                <span class="text-slate-300">Notifikasi Siap Ambil</span>
+                                <span class="font-bold text-emerald-300">🔔 Web Push & Suara</span>
+                            </div>
+                            <div class="flex items-center justify-between bg-black/20 p-3 rounded-xl">
+                                <span class="text-slate-300">Pengambilan Pesanan</span>
+                                <span class="font-bold text-white">Cukup Tunjukkan Nota Digital</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {{-- ═══ 3 Zona Kantin Riil SMECONE ═══ --}}
+    <section id="zona-kantin" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="inline-block text-xs font-bold uppercase tracking-wider text-primary-800 bg-primary-50 px-3 py-1 rounded-full mb-2">
+                Zona Kampus SMECONE
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Pilih Zona Kantin</h2>
+            <p class="text-sm text-slate-500 mt-2">
+                Pilih kantin terdekat dengan ruang kelas atau ruang praktikum Anda.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @foreach($kantins as $kantin)
+                <a href="{{ route('kantin.show', $kantin) }}" 
+                   class="group card p-6 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-primary-50 text-primary-800 flex items-center justify-center font-bold text-lg group-hover:bg-primary-800 group-hover:text-white transition-colors">
+                                @if(str_contains(strtolower($kantin->name), 'pemasaran'))
+                                    🏬
+                                @elseif(str_contains(strtolower($kantin->name), 'corner'))
+                                    ☕
+                                @else
+                                    🍲
+                                @endif
+                            </div>
+                            <span class="badge-success text-xs font-bold">
+                                {{ $kantin->kiosks_count }} Kios Buka
+                            </span>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-slate-900 group-hover:text-primary-800 transition-colors">
+                            {{ $kantin->name }}
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                            {{ $kantin->description ?? 'Jelajahi berbagai pilihan menu makanan dan minuman lezat di kantin ini.' }}
+                        </p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-primary-800">
+                        <span>Lihat Kios & Menu</span>
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
                     </div>
                 </a>
             @endforeach
         </div>
     </section>
 
-    {{-- ═══ CTA Section ═══ --}}
-    <section class="bg-gradient-to-r from-primary-500 to-amber-400 py-16">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            @guest
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Belum Punya Akun?</h2>
-                <p class="text-white/80 text-lg mb-8">Daftar sekarang dan mulai pesan makanan favoritmu dengan mudah!</p>
-                <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-white text-primary-600 font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
-                    Daftar Gratis
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
-                </a>
-            @else
-                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Lapar? Atau Haus?</h2>
-                <p class="text-white/80 text-lg mb-8">Ayo lihat kantin di sini dan mulai pesananmu sekarang!</p>
-                <a href="#kantin" class="inline-flex items-center gap-2 bg-white text-primary-600 font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
-                    Mulai Pesanan Sekarang
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-                    </svg>
-                </a>
-            @endguest
+    {{-- ═══ 4 Pilar Keunggulan (Value Proposition) ═══ --}}
+    <section class="bg-white border-y border-slate-200/80 py-14">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-xl mx-auto mb-10">
+                <h3 class="text-xl font-extrabold text-slate-900">Kenapa Pesan Lewat SMECONE E-Kantin?</h3>
+                <p class="text-xs text-slate-500 mt-1">Dibuat khusus untuk efisiensi waktu istirahat warga SMK Negeri 1 Purwokerto.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {{-- Pillar 1 --}}
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                        ⏰
+                    </div>
+                    <h4 class="text-sm font-bold text-slate-900">Pre-Order Jam Istirahat</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Pesan dari kelas 15 menit sebelum bel berbunyi. Makanan sudah siap matang saat waktu istirahat dimulai.
+                    </p>
+                </div>
+
+                {{-- Pillar 2 --}}
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                        🔔
+                    </div>
+                    <h4 class="text-sm font-bold text-slate-900">Notifikasi Web Push & Suara</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Layar HP otomatis bergetar dan membunyikan alarm saat pesanan selesai dimasak. Tak perlu berdiri menunggu di depan wajan.
+                    </p>
+                </div>
+
+                {{-- Pillar 3 --}}
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-primary-100 text-primary-800 flex items-center justify-center font-bold">
+                        💳
+                    </div>
+                    <h4 class="text-sm font-bold text-slate-900">Full Cashless (QRIS)</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Bayar instan via QRIS Midtrans. Penjual fokus memasak higienis tanpa harus memegang uang tunai berminyak.
+                    </p>
+                </div>
+
+                {{-- Pillar 4 --}}
+                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-800 flex items-center justify-center font-bold">
+                        📋
+                    </div>
+                    <h4 class="text-sm font-bold text-slate-900">Struk Digital Simpel</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Cukup tunjukkan nomor order dan nama di layar HP ke penjual kios. Cepat, jelas, dan tanpa ribet scan.
+                    </p>
+                </div>
+            </div>
         </div>
     </section>
 @endsection

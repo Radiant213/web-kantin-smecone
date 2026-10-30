@@ -6,45 +6,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'E-Kantin') }}</title>
+    <title>{{ config('app.name', 'SMECONE E-Kantin') }} - SMK Negeri 1 Purwokerto</title>
 
-    <link rel="icon" type="image/jpeg" href="{{ asset('favicon.jpg') }}?v=2">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-smecone.png') }}">
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=poppins:300,400,500,600,700,800" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-50">
-    <div x-data="{ loaded: false }" x-init="setTimeout(() => loaded = true, 100)"
-        class="min-h-screen flex flex-col justify-center items-center p-6 relative overflow-hidden">
-        {{-- Decorative background elements --}}
-        <div class="absolute -top-20 -left-20 w-72 h-72 bg-primary-200/50 rounded-full blur-3xl transition-all duration-1000 ease-out transform"
-            :class="loaded ? 'translate-x-0 translate-y-0 opacity-100' : '-translate-x-10 -translate-y-10 opacity-0'">
-        </div>
-        <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-amber-200/50 rounded-full blur-3xl transition-all duration-1000 delay-300 ease-out transform"
-            :class="loaded ? 'translate-x-0 translate-y-0 opacity-100' : 'translate-x-10 translate-y-10 opacity-0'">
-        </div>
+<body class="font-sans antialiased bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+    {{-- Header / Top subtle bar --}}
+    <div class="h-1.5 bg-gradient-to-r from-primary-700 via-amber-400 to-primary-800"></div>
 
-        <div class="relative z-10 w-full max-w-md flex flex-col items-center">
-            {{-- Logo --}}
-            <a href="/"
-                class="mb-8 text-center flex flex-col items-center group transition-all duration-700 ease-out transform"
-                :class="loaded ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'">
-                <img src="{{ asset('favicon.jpg') }}" alt="Logo E-Kantin"
-                    class="w-20 h-20 object-contain rounded-2xl shadow-md border border-gray-100 bg-white mb-4 group-hover:scale-105 group-hover:rotate-3 transition-transform duration-300">
-                <h1 class="text-3xl font-bold text-gray-800 tracking-tight">E-<span
-                        class="text-primary-500">Kantin</span></h1>
-                <p class="text-sm text-gray-500 mt-1">SMKN 1 Purwokerto</p>
-            </a>
+    <div class="flex-1 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
+        {{-- Subtle background glow --}}
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-primary-100/60 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-100/50 rounded-full blur-3xl pointer-events-none"></div>
 
-            <div class="w-full bg-white rounded-2xl shadow-xl shadow-primary-500/5 border border-gray-100 p-8 transition-all duration-700 delay-150 ease-out transform"
-                :class="loaded ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-12 opacity-0 scale-95'">
+        <div class="relative z-10 w-full max-w-md">
+            {{-- Institutional School Logo & Title --}}
+            <div class="text-center mb-8">
+                <a href="{{ route('home') }}" class="inline-flex flex-col items-center group">
+                    <div class="w-20 h-20 rounded-2xl bg-white p-2 shadow-md border border-slate-200/80 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                        <img src="{{ asset('images/logo-smecone.png') }}" alt="Logo SMECONE" class="w-full h-full object-contain">
+                    </div>
+                    <div class="mt-3">
+                        <span class="text-xs font-bold tracking-widest uppercase text-primary-700 bg-primary-50 px-2.5 py-0.5 rounded-full border border-primary-200">
+                            SMK Negeri 1 Purwokerto
+                        </span>
+                        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight mt-1">
+                            SMECONE <span class="text-primary-700">E-Kantin</span>
+                        </h1>
+                    </div>
+                </a>
+            </div>
+
+            {{-- Auth Card --}}
+            <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200/80 p-8 sm:p-10">
                 {{ $slot }}
+            </div>
+
+            {{-- Footer info --}}
+            <div class="text-center mt-6 text-xs text-slate-400">
+                <p>&copy; {{ date('Y') }} SMECONE E-Kantin. Layanan Pesan Makanan Bebas Antre.</p>
             </div>
         </div>
     </div>
+
+    <div></div>
 </body>
 
 </html>

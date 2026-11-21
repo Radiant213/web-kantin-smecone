@@ -209,13 +209,19 @@
         document.addEventListener("DOMContentLoaded", () => {
             const urlParams = new URLSearchParams(window.location.search);
             const payOrderId = urlParams.get('pay_order_id');
-            @if(isset($orders) && $orders->isNotEmpty())
-                @foreach($orders as $o)
-                    if (payOrderId == '{{ $o->id }}' && '{{ $o->snap_token }}') {
-                        setTimeout(() => payWithSnap('{{ $o->snap_token }}'), 400);
-                    }
-                @endforeach
-            @endif
+
+            if (payOrderId) {
+                // Immediately clean URL history so closing or refreshing never loops popup
+                window.history.replaceState({}, document.title, window.location.pathname);
+
+                @if(isset($orders) && $orders->isNotEmpty())
+                    @foreach($orders as $o)
+                        if (payOrderId == '{{ $o->id }}' && '{{ $o->snap_token }}') {
+                            setTimeout(() => payWithSnap('{{ $o->snap_token }}'), 300);
+                        }
+                    @endforeach
+                @endif
+            }
 
             // WebSocket Live Auto-refresh on Status Update
             if (typeof Echo !== 'undefined' && {{ auth()->check() ? 'true' : 'false' }}) {

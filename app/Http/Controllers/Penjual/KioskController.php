@@ -9,6 +9,19 @@ use Illuminate\Http\Request;
 
 class KioskController extends Controller
 {
+    /**
+     * Tampilkan halaman utama manajemen kios & menu untuk penjual.
+     */
+    public function index()
+    {
+        $user = auth()->user();
+        $kiosk = Kiosk::with(['kantin', 'menus'])->where('user_id', $user->id)->first();
+        $pendingApplication = KioskApplication::with('kiosk.kantin')->where('user_id', $user->id)->where('status', 'pending')->first();
+        $availableKiosks = Kiosk::with('kantin')->whereNull('user_id')->get();
+
+        return view('penjual.kiosk.index', compact('kiosk', 'pendingApplication', 'availableKiosks'));
+    }
+
     public function apply(Request $request)
     {
         $request->validate([
@@ -18,12 +31,12 @@ class KioskController extends Controller
 
         // Check if user already has a pending application
         if (auth()->user()->kioskApplications()->where('status', 'pending')->exists()) {
-            return back()->with('error', 'Anda sudah memiliki pengajuan kios yang sedang diproses.');
+            return redirect()->route('penjual.kiosk.index')->with('error', 'Anda sudah memiliki pengajuan kios yang sedang diproses.');
         }
 
         // Check if user already owns a kiosk
         if (Kiosk::where('user_id', auth()->id())->exists()) {
-            return back()->with('error', 'Anda sudah memiliki kios.');
+            return redirect()->route('penjual.kiosk.index')->with('error', 'Anda sudah memiliki kios.');
         }
 
         KioskApplication::create([
@@ -32,7 +45,7 @@ class KioskController extends Controller
             'reason' => $request->reason,
         ]);
 
-        return back()->with('success', 'Pengajuan kepemilikan kios berhasil dikirim dan sedang menunggu persetujuan admin.');
+        return redirect()->route('penjual.kiosk.index')->with('success', 'Pengajuan kepemilikan kios berhasil dikirim dan sedang menunggu persetujuan admin.');
     }
 
     public function updateDetails(Request $request)
@@ -56,6 +69,6 @@ class KioskController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Profil kios berhasil diperbarui!');
+        return redirect()->route('penjual.kiosk.index')->with('success', 'Informasi kios berhasil diperbarui!');
     }
 }

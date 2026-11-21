@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
 
 // ── Authenticated (Penjual) Routes ──
 Route::middleware(['auth', 'role:penjual'])->prefix('penjual')->name('penjual.')->group(function () {
+    Route::get('/kiosk', [PenjualKioskController::class, 'index'])->name('kiosk.index');
     Route::post('/kiosk/apply', [PenjualKioskController::class, 'apply'])->name('kiosk.apply');
     Route::put('/kiosk/update-details', [PenjualKioskController::class, 'updateDetails'])->name('kiosk.updateDetails');
     Route::resource('menus', PenjualMenuController::class)->except(['index', 'show']);

@@ -42,7 +42,7 @@ class MenuController extends Controller
 
         Menu::create($data);
 
-        return redirect()->route('profile.edit')->with('success', 'Menu berhasil ditambahkan!');
+        return redirect()->route('penjual.kiosk.index')->with('success', 'Menu baru berhasil ditambahkan!');
     }
 
     /**
@@ -83,7 +83,7 @@ class MenuController extends Controller
 
         $menu->update($data);
 
-        return redirect()->route('profile.edit')->with('success', 'Menu berhasil diperbarui!');
+        return redirect()->route('penjual.kiosk.index')->with('success', 'Menu berhasil diperbarui!');
     }
 
     /**
@@ -101,6 +101,6 @@ class MenuController extends Controller
 
         $menu->delete();
 
-        return redirect()->route('profile.edit')->with('success', 'Menu berhasil dihapus!');
+        return redirect()->route('penjual.kiosk.index')->with('success', 'Menu berhasil dihapus!');
     }
 }

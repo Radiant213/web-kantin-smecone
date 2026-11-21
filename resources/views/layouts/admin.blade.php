@@ -13,6 +13,12 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800|poppins:400,500,600,700" rel="stylesheet" />
 
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -27,14 +33,16 @@
     x-init="setTimeout(() => loaded = true, 50)">
     <div class="flex min-h-screen">
 
-        {{-- ═══ Sidebar ═══ --}}
-        {{-- Overlay (mobile) --}}
+        {{-- ═══ Sidebar Mobile Overlay ═══ --}}
         <div x-show="sidebarOpen" @click="sidebarOpen = false"
             x-transition:enter="transition-opacity ease-linear duration-300" x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300"
             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden" x-cloak></div>
+            class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
+            style="display: none;"
+            x-cloak></div>
 
+        {{-- ═══ Sidebar ═══ --}}
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
             class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200/80 shadow-xl lg:shadow-none transform transition-transform duration-300 lg:translate-x-0 lg:static flex flex-col">
 
@@ -150,9 +158,9 @@
 
         {{-- ═══ Main Content Area ═══ --}}
         <div class="flex-1 flex flex-col min-w-0">
-            {{-- Top Header --}}
+            {{-- Top Header (z-40) --}}
             <header
-                class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 h-16 flex items-center justify-between px-4 lg:px-8 gap-4">
+                class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 h-16 flex items-center justify-between px-4 lg:px-8 gap-4">
                 {{-- Mobile toggle --}}
                 <button @click="sidebarOpen = true" class="lg:hidden p-2 text-slate-600 hover:text-red-700 hover:bg-slate-100 rounded-xl mr-1">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,8 +187,10 @@
                 <div class="ml-auto flex items-center gap-2 sm:gap-3">
 
                     {{-- Toggle Right Panel (Aktivitas & Notif) --}}
-                    <button @click="rightPanelOpen = !rightPanelOpen"
-                        class="p-2 text-slate-500 hover:text-red-700 hover:bg-slate-100 rounded-xl transition-all"
+                    <button @click.stop="rightPanelOpen = !rightPanelOpen"
+                        id="admin-panel-toggle"
+                        type="button"
+                        class="p-2 text-slate-500 hover:text-red-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
                         :class="rightPanelOpen ? 'bg-red-50 text-red-700 ring-1 ring-red-200' : ''"
                         title="Buka / Tutup Panel Aktivitas">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,36 +200,40 @@
                     </button>
 
                     {{-- Notification Dropdown --}}
-                    <div class="relative" x-data="{ notifDropdown: false }">
-                        <button @click.stop="notifDropdown = !notifDropdown"
-                            class="relative p-2 text-slate-500 hover:text-red-700 hover:bg-slate-100 rounded-xl transition-all"
-                            :class="notifDropdown ? 'bg-red-50 text-red-700' : ''"
+                    <div class="relative">
+                        <button @click.stop="notifOpen = !notifOpen; profileOpen = false"
+                            id="admin-notif-button"
+                            type="button"
+                            class="relative p-2 text-slate-500 hover:text-red-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
+                            :class="notifOpen ? 'bg-red-50 text-red-700' : ''"
                             title="Notifikasi">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
-                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full ring-2 ring-white animate-pulse"></span>
+                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-600 rounded-full ring-2 ring-white"></span>
                         </button>
 
                         {{-- Dropdown card --}}
-                        <div x-show="notifDropdown"
-                            @click.outside="notifDropdown = false"
-                            @keydown.escape.window="notifDropdown = false"
-                            x-transition:enter="transition ease-out duration-200"
+                        <div x-show="notifOpen"
+                            @click.outside="notifOpen = false"
+                            @keydown.escape.window="notifOpen = false"
+                            id="admin-notif-dropdown"
+                            x-transition:enter="transition ease-out duration-150"
                             x-transition:enter-start="opacity-0 translate-y-1 scale-95"
                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                             x-transition:leave="transition ease-in duration-100"
                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                             x-transition:leave-end="opacity-0 translate-y-1 scale-95"
                             class="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 overflow-hidden"
+                            style="display: none;"
                             x-cloak>
                             <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <span class="font-bold text-sm text-slate-800">Notifikasi</span>
                                     <span class="text-[11px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full">Sistem</span>
                                 </div>
-                                <button @click="notifDropdown = false" class="text-xs text-slate-400 hover:text-slate-600">Tutup</button>
+                                <button type="button" @click="notifOpen = false" class="text-xs text-slate-400 hover:text-slate-600">Tutup</button>
                             </div>
                             <div class="max-h-72 overflow-y-auto divide-y divide-slate-50">
                                 @php
@@ -247,9 +261,11 @@
                     </div>
 
                     {{-- Administrator Profile Dropdown --}}
-                    <div class="relative" x-data="{ profileDropdown: false }">
-                        <button @click.stop="profileDropdown = !profileDropdown"
-                            class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-full border border-slate-200 hover:border-red-200 hover:bg-slate-50 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1">
+                    <div class="relative">
+                        <button @click.stop="profileOpen = !profileOpen; notifOpen = false"
+                            id="admin-profile-button"
+                            type="button"
+                            class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-full border border-slate-200 hover:border-red-200 hover:bg-slate-50 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1 cursor-pointer">
                             <div class="w-8 h-8 rounded-full bg-red-100 text-red-800 flex items-center justify-center font-bold text-xs shadow-inner">
                                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                             </div>
@@ -258,22 +274,24 @@
                                 <span class="text-[10px] text-slate-400 leading-none">Admin</span>
                             </div>
                             <svg class="w-4 h-4 text-slate-400 transition-transform duration-200"
-                                :class="profileDropdown ? 'rotate-180' : ''"
+                                :class="profileOpen ? 'rotate-180' : ''"
                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
 
-                        <div x-show="profileDropdown"
-                            @click.outside="profileDropdown = false"
-                            @keydown.escape.window="profileDropdown = false"
-                            x-transition:enter="transition ease-out duration-200"
+                        <div x-show="profileOpen"
+                            @click.outside="profileOpen = false"
+                            @keydown.escape.window="profileOpen = false"
+                            id="admin-profile-dropdown"
+                            x-transition:enter="transition ease-out duration-150"
                             x-transition:enter-start="opacity-0 translate-y-1 scale-95"
                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                             x-transition:leave="transition ease-in duration-100"
                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                             x-transition:leave-end="opacity-0 translate-y-1 scale-95"
                             class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-50 overflow-hidden"
+                            style="display: none;"
                             x-cloak>
 
                             <div class="px-4 py-2.5 border-b border-slate-100 bg-slate-50/50">
@@ -299,7 +317,7 @@
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"
-                                        class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">
+                                        class="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer">
                                         <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                                         Keluar (Logout)
                                     </button>
@@ -337,19 +355,20 @@
         {{-- ═══ Collapsible Right Panel (Panel Aktivitas & Notifikasi) ═══ --}}
         {{-- Mobile backdrop --}}
         <div x-show="rightPanelOpen" @click="rightPanelOpen = false"
-            x-transition:enter="transition-opacity ease-linear duration-200" x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-200"
-            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm xl:hidden" x-cloak></div>
+            class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm xl:hidden"
+            style="display: none;"
+            x-cloak></div>
 
         <aside x-show="rightPanelOpen"
+            id="admin-right-panel"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="translate-x-full opacity-0"
             x-transition:enter-end="translate-x-0 opacity-100"
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="translate-x-0 opacity-100"
             x-transition:leave-end="translate-x-full opacity-0"
-            class="fixed xl:sticky top-0 right-0 z-50 xl:z-20 h-screen w-80 bg-white border-l border-slate-200/80 p-5 overflow-y-auto shadow-2xl xl:shadow-none flex flex-col flex-shrink-0"
+            class="fixed xl:sticky top-0 right-0 z-50 xl:z-30 h-screen w-80 bg-white border-l border-slate-200/80 p-5 overflow-y-auto shadow-2xl xl:shadow-none flex flex-col flex-shrink-0"
+            style="display: none;"
             x-cloak>
 
             {{-- Panel Header with Close Button --}}
@@ -359,7 +378,9 @@
                     <h3 class="font-bold text-sm text-slate-800">Panel Informasi</h3>
                 </div>
                 <button @click="rightPanelOpen = false"
-                    class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                    id="admin-panel-close"
+                    type="button"
+                    class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                     title="Tutup Panel">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
@@ -425,6 +446,89 @@
             @endif
         </aside>
     </div>
+
+    {{-- Fallback Vanilla JS for 100% Reliable Click Interactions --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const profileBtn = document.getElementById('admin-profile-button');
+            const profileMenu = document.getElementById('admin-profile-dropdown');
+            const notifBtn = document.getElementById('admin-notif-button');
+            const notifMenu = document.getElementById('admin-notif-dropdown');
+            const panelBtn = document.getElementById('admin-panel-toggle');
+            const rightPanel = document.getElementById('admin-right-panel');
+            const panelClose = document.getElementById('admin-panel-close');
+
+            function hideMenu(el) {
+                if (el) el.style.display = 'none';
+            }
+
+            function showMenu(el) {
+                if (el) el.style.display = 'block';
+            }
+
+            if (profileBtn && profileMenu) {
+                profileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isShown = profileMenu.style.display !== 'none';
+                    hideMenu(notifMenu);
+                    if (isShown) {
+                        hideMenu(profileMenu);
+                    } else {
+                        showMenu(profileMenu);
+                    }
+                });
+            }
+
+            if (notifBtn && notifMenu) {
+                notifBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isShown = notifMenu.style.display !== 'none';
+                    hideMenu(profileMenu);
+                    if (isShown) {
+                        hideMenu(notifMenu);
+                    } else {
+                        showMenu(notifMenu);
+                    }
+                });
+            }
+
+            if (panelBtn && rightPanel) {
+                panelBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isShown = rightPanel.style.display !== 'none';
+                    if (isShown) {
+                        rightPanel.style.display = 'none';
+                    } else {
+                        rightPanel.style.display = 'flex';
+                    }
+                });
+            }
+
+            if (panelClose && rightPanel) {
+                panelClose.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    rightPanel.style.display = 'none';
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if (profileMenu && !profileMenu.contains(e.target) && !profileBtn?.contains(e.target)) {
+                    hideMenu(profileMenu);
+                }
+                if (notifMenu && !notifMenu.contains(e.target) && !notifBtn?.contains(e.target)) {
+                    hideMenu(notifMenu);
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    hideMenu(profileMenu);
+                    hideMenu(notifMenu);
+                    if (rightPanel) rightPanel.style.display = 'none';
+                }
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>

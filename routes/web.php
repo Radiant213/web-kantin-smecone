@@ -74,7 +74,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::post('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->middleware('auth');
 Route::delete('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy'])->middleware('auth');
 
-// Midtrans Webhook Callback
+// Midtrans Webhook Callback & Sandbox Simulator
 Route::post('/midtrans/callback', [\App\Http\Controllers\PaymentCallbackController::class, 'handle'])->name('midtrans.callback');
+Route::post('/midtrans/simulate-payment', [\App\Http\Controllers\PaymentCallbackController::class, 'simulatePayment'])->middleware('auth')->name('midtrans.simulate');
 
 require __DIR__ . '/auth.php';

@@ -50,6 +50,31 @@ class PaymentCallbackController extends Controller
         }
     }
 
+    /**
+     * Simulate Sandbox Payment for testing without external tools
+     */
+    public function simulatePayment(Request $request)
+    {
+        $isProduction = filter_var(config('services.midtrans.is_production', false), FILTER_VALIDATE_BOOLEAN);
+        if ($isProduction) {
+            return response()->json(['error' => 'Simulator is disabled in production.'], 403);
+        }
+
+        $orderCode = $request->input('order_code');
+        $order = Order::where('order_code', $orderCode)->first();
+
+        if (!$order) {
+            return response()->json(['error' => 'Order not found.'], 404);
+        }
+
+        $this->markAsPaid($order, 'qris_sandbox_tester');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Simulasi pembayaran Sandbox berhasil! Status pesanan kini LUNAS.',
+        ]);
+    }
+
     private function markAsPaid(Order $order, $paymentType)
     {
         $order->update([
@@ -76,4 +101,3 @@ class PaymentCallbackController extends Controller
         }
     }
 }
-

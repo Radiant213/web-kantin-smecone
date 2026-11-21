@@ -90,14 +90,28 @@
                                     {{ $statusText }}
                                 </span>
 
-                                @if(!$isPaid && $order->snap_token)
-                                    <button type="button" onclick="payWithSnap('{{ $order->snap_token }}')"
-                                            class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-xs font-extrabold shadow-md shadow-amber-500/20 active:scale-95 transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
-                                        </svg>
-                                        <span>Bayar QRIS Sekarang</span>
-                                    </button>
+                                @if(!$isPaid)
+                                    <div class="flex flex-wrap items-center justify-end gap-2">
+                                        @if($order->snap_token)
+                                            <button type="button" onclick="payWithSnap('{{ $order->snap_token }}')"
+                                                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-xs font-extrabold shadow-md shadow-amber-500/20 active:scale-95 transition-all">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                                                </svg>
+                                                <span>Bayar QRIS Sekarang</span>
+                                            </button>
+                                        @endif
+
+                                        {{-- Sandbox Instant Payment Simulator Button --}}
+                                        @if(!filter_var(config('services.midtrans.is_production', false), FILTER_VALIDATE_BOOLEAN))
+                                            <button type="button" onclick="simulatePayment('{{ $order->order_code }}')"
+                                                    title="Simulasi pelunasan QRIS langsung tanpa simulator eksternal"
+                                                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold transition-all active:scale-95 shadow-xs">
+                                                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                                <span>⚡ Simulasi Bayar Berhasil (Sandbox)</span>
+                                            </button>
+                                        @endif
+                                    </div>
                                 @endif
                             </div>
                         </div>
@@ -203,6 +217,31 @@
                 console.warn('Midtrans Snap SDK is loading, retrying...');
                 setTimeout(() => payWithSnap(snapToken), 800);
             }
+        }
+
+        function simulatePayment(orderCode) {
+            if (!confirm('Simulasikan pembayaran QRIS berhasil untuk pesanan ' + orderCode + '?')) return;
+
+            fetch('{{ route('midtrans.simulate') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ order_code: orderCode })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Gagal simulasi pembayaran.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Terjadi kesalahan koneksi.');
+            });
         }
 
         // Auto trigger Snap popup if pay_order_id query param exists

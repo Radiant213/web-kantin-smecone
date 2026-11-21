@@ -31,8 +31,9 @@
                 
                 {{-- Brand Lockup with School Crest --}}
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                    <img src="{{ asset('images/logo-smecone.png') }}" alt="Logo SMECONE" 
-                         class="w-11 h-11 object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-200">
+                    <div class="w-11 h-11 rounded-full overflow-hidden bg-white border-2 border-primary-100 shadow-sm group-hover:scale-105 transition-transform duration-200 flex-shrink-0">
+                        <img src="{{ asset('images/logo-smecone.png') }}" alt="Logo SMECONE" class="w-full h-full object-cover">
+                    </div>
                     <div>
                         <div class="flex items-center gap-1.5">
                             <span class="text-lg font-black tracking-tight text-slate-900">SMECONE</span>
@@ -231,7 +232,9 @@
                 {{-- Col 1: Identity --}}
                 <div class="md:col-span-2 space-y-3">
                     <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo-smecone.png') }}" alt="Logo SMECONE" class="w-10 h-10 object-contain">
+                        <div class="w-10 h-10 rounded-full overflow-hidden bg-white border border-slate-200 flex-shrink-0">
+                            <img src="{{ asset('images/logo-smecone.png') }}" alt="Logo SMECONE" class="w-full h-full object-cover">
+                        </div>
                         <div>
                             <span class="text-base font-black text-slate-900 tracking-tight">SMECONE E-KANTIN</span>
                             <p class="text-xs text-slate-500 font-medium">SMK Negeri 1 Purwokerto</p>
@@ -241,8 +244,9 @@
                         Platform pemesanan makanan mandiri untuk lingkungan SMK Negeri 1 Purwokerto. 
                         Pre-order sebelum bel istirahat, bayar digital via Midtrans QRIS, dan ambil cepat tanpa antre.
                     </p>
-                    <p class="text-[11px] text-slate-400">
-                        📍 Jl. Dr. Soeparno No. 29, Purwokerto Wetan, Kec. Purwokerto Timur, Kab. Banyumas, Jawa Tengah 53111
+                    <p class="text-[11px] text-slate-400 flex items-start gap-1.5">
+                        <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <span>Jl. Dr. Soeparno No. 29, Purwokerto Wetan, Kec. Purwokerto Timur, Kab. Banyumas, Jawa Tengah 53111</span>
                     </p>
                 </div>
 
@@ -260,8 +264,14 @@
                 <div>
                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Sesi Istirahat</h4>
                     <ul class="space-y-2 text-xs text-slate-600 font-medium">
-                        <li>⏰ <strong>Istirahat 1:</strong> 09:45 - 10:15 WIB</li>
-                        <li>⏰ <strong>Istirahat 2:</strong> 12:00 - 12:45 WIB</li>
+                        <li class="flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            <span><strong>Istirahat 1:</strong> 09:45 - 10:15 WIB</span>
+                        </li>
+                        <li class="flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            <span><strong>Istirahat 2:</strong> 12:00 - 12:45 WIB</span>
+                        </li>
                     </ul>
                 </div>
             </div>

@@ -3,28 +3,33 @@
 @section('title', 'Pesanan & Nota Digital')
 
 @section('content')
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Pesanan & Nota Digital</h1>
-                <p class="text-xs text-slate-500 font-medium">Tunjukkan nota digital di bawah ini ke meja kios saat jam istirahat.</p>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Pesanan &amp; Nota Digital</h1>
+                <p class="text-xs sm:text-sm text-slate-500 mt-1">Tunjukkan nota digital di bawah ini ke meja baki kios saat jam istirahat.</p>
             </div>
-            <a href="{{ route('home') }}" class="btn-outline text-xs py-2 px-4 self-start sm:self-auto">
-                + Pesan Menu Lain
+            <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm font-bold text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition-all self-start sm:self-auto">
+                <svg class="w-4 h-4 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Pesan Menu Lain
             </a>
         </div>
 
         @if($orders->isEmpty())
-            <div class="card p-12 text-center max-w-lg mx-auto">
-                <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4 text-2xl">
-                    📋
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-10 sm:p-14 text-center max-w-lg mx-auto shadow-sm">
+                <div class="w-16 h-16 rounded-2xl bg-primary-50 text-primary-700 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
                 </div>
-                <h3 class="text-base font-bold text-slate-800 mb-1">Belum Ada Pesanan Aktif</h3>
-                <p class="text-xs text-slate-500 mb-6 max-w-xs mx-auto">
-                    Anda belum memesan makanan atau minuman hari ini. Yuk pre-order sekarang!
+                <h3 class="text-base font-extrabold text-slate-900 mb-1">Belum Ada Pesanan Aktif</h3>
+                <p class="text-xs text-slate-500 mb-6 max-w-xs mx-auto leading-relaxed">
+                    Anda belum memesan makanan atau minuman hari ini. Pre-order sekarang sebelum bel berbunyi!
                 </p>
-                <a href="{{ route('home') }}" class="btn-primary text-xs">Jelajahi Kantin Sekolah</a>
+                <a href="{{ route('home') }}" class="btn-primary text-xs py-2.5 px-5">Jelajahi Kantin Sekolah</a>
             </div>
         @else
             <div class="space-y-6">
@@ -33,88 +38,95 @@
                         $isPaid = ($order->payment_status === 'paid');
                         $statusText = match($order->status) {
                             'pending' => 'Menunggu Konfirmasi Kios',
-                            'processing' => 'Sedang Dimasak di Kios',
-                            'completed' => 'Siap Diambil / Selesai',
-                            'cancelled' => 'Dibatalkan',
-                            default => $order->status,
+                            'processing' => 'Sedang Dimasak / Disiapkan',
+                            'completed' => 'Siap Diambil di Kios',
+                            'cancelled' => 'Pesanan Dibatalkan',
+                            default => ucfirst($order->status),
                         };
                         $statusBadgeClass = match($order->status) {
-                            'pending' => 'badge-warning',
-                            'processing' => 'badge-info animate-pulse',
-                            'completed' => 'badge-success',
-                            'cancelled' => 'badge-danger',
-                            default => 'badge',
+                            'pending' => 'bg-amber-50 text-amber-800 border-amber-200',
+                            'processing' => 'bg-sky-50 text-sky-800 border-sky-200 animate-pulse',
+                            'completed' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
+                            'cancelled' => 'bg-rose-50 text-rose-800 border-rose-200',
+                            default => 'bg-slate-50 text-slate-700 border-slate-200',
                         };
-                        $sessionLabel = ($order->pickup_session === 'istirahat_2') ? 'Istirahat 2 (12:00 WIB)' : 'Istirahat 1 (09:45 WIB)';
+                        $sessionLabel = ($order->pickup_session === 'istirahat_2') ? 'Istirahat 2 (12:00 - 12:45 WIB)' : 'Istirahat 1 (09:45 - 10:15 WIB)';
+                        $orderCode = $order->order_code ?? ('#SMC-' . str_pad($order->id, 4, '0', STR_PAD_LEFT));
                     @endphp
 
-                    {{-- ═══ Simple Digital Receipt Card ═══ --}}
-                    <div class="card border-2 {{ $order->status === 'completed' ? 'border-emerald-300' : 'border-slate-200/80' }} p-6 space-y-5">
+                    {{-- ═══ Digital Receipt Card ═══ --}}
+                    <div class="bg-white rounded-3xl border-2 {{ $order->status === 'completed' ? 'border-emerald-300 ring-2 ring-emerald-100' : 'border-slate-200/90' }} p-6 sm:p-7 space-y-5 shadow-sm hover:shadow-md transition-all">
                         
                         {{-- Receipt Top Bar --}}
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                             <div>
-                                <span class="text-[10px] font-black tracking-widest text-primary-800 uppercase bg-primary-50 px-2.5 py-1 rounded-md">
-                                    NOTA PENGAMBILAN
-                                </span>
-                                <h3 class="text-2xl font-black text-slate-900 mt-1 tracking-tight">
-                                    {{ $order->order_code ?? ('#SMC-' . str_pad($order->id, 4, '0', STR_PAD_LEFT)) }}
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-[10px] font-extrabold tracking-widest text-primary-800 uppercase bg-primary-50 px-2.5 py-0.5 rounded-md border border-primary-200">
+                                        NOTA PENGAMBILAN
+                                    </span>
+                                    @if($isPaid)
+                                        <span class="inline-flex items-center gap-1 text-[10px] text-emerald-800 font-extrabold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                                            <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                            LUNAS (QRIS)
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 text-[10px] text-amber-800 font-extrabold bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
+                                            BELUM DIBAYAR
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                                    {{ $orderCode }}
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-0.5">
-                                    Kios: <strong class="text-slate-800">{{ $order->kiosk->name ?? 'Kios Kantin' }}</strong> • 
-                                    Zona: <strong>{{ $order->kiosk->kantin->name ?? 'Kantin' }}</strong>
+                                <p class="text-xs text-slate-500 mt-1">
+                                    Stand: <strong class="text-slate-800">{{ $order->kiosk->name ?? 'Kios Kantin' }}</strong> &bull; 
+                                    Zona: <strong>{{ $order->kiosk->kantin->name ?? 'Kantin Sekolah' }}</strong>
                                 </p>
                             </div>
 
-                            <div class="sm:text-right">
-                                <span class="{{ $statusBadgeClass }} text-xs font-bold px-3 py-1">
+                            <div class="sm:text-right flex flex-col sm:items-end gap-2">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border {{ $statusBadgeClass }}">
                                     {{ $statusText }}
                                 </span>
-                                <div class="mt-2 text-xs">
-                                    @if($isPaid)
-                                        <span class="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
-                                            ✓ LUNAS (QRIS)
-                                        </span>
-                                    @else
-                                        @if($order->snap_token)
-                                            <button onclick="payWithSnap('{{ $order->snap_token }}')" 
-                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold transition-colors">
-                                                <span>Bayar QRIS Sekarang</span>
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                                            </button>
-                                        @else
-                                            <span class="text-amber-600 font-bold">Menunggu Pembayaran</span>
-                                        @endif
-                                    @endif
-                                </div>
+
+                                @if(!$isPaid && $order->snap_token)
+                                    <button type="button" onclick="payWithSnap('{{ $order->snap_token }}')"
+                                            class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-xs font-extrabold shadow-md shadow-amber-500/20 active:scale-95 transition-all">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                                        </svg>
+                                        <span>Bayar QRIS Sekarang</span>
+                                    </button>
+                                @endif
                             </div>
                         </div>
 
-                        {{-- Receipt Details (Clean & Human Readable) --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        {{-- Details Info Grid --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-100">
                             <div>
-                                <span class="text-slate-400">Atas Nama Pemesan:</span>
-                                <p class="font-bold text-slate-900 text-sm mt-0.5">{{ $order->user->name }}</p>
+                                <span class="text-slate-400 block text-[11px] font-bold uppercase tracking-wider">Pemesan</span>
+                                <p class="font-extrabold text-slate-900 text-sm mt-0.5">{{ $order->user->name }}</p>
                             </div>
                             <div>
-                                <span class="text-slate-400">Sesi Pengambilan:</span>
-                                <p class="font-bold text-slate-900 text-sm mt-0.5">⏰ {{ $sessionLabel }}</p>
+                                <span class="text-slate-400 block text-[11px] font-bold uppercase tracking-wider">Jadwal Pengambilan</span>
+                                <p class="font-extrabold text-primary-800 text-sm mt-0.5">{{ $sessionLabel }}</p>
                             </div>
                         </div>
 
                         {{-- Order Items Table --}}
                         <div class="space-y-2">
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Daftar Menu:</h4>
-                            <div class="divide-y divide-slate-100 border border-slate-100 rounded-xl overflow-hidden bg-white">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Rincian Menu Dipesan:</h4>
+                            <div class="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden bg-white shadow-xs">
                                 @foreach($order->items as $item)
-                                    <div class="flex items-center justify-between p-3 text-xs">
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-bold text-primary-800 bg-primary-50 px-2 py-0.5 rounded">
+                                    <div class="flex items-center justify-between p-3.5 text-xs">
+                                        <div class="flex items-center gap-2.5">
+                                            <span class="font-black text-primary-800 bg-primary-50 px-2 py-0.5 rounded-lg border border-primary-200">
                                                 {{ $item->quantity }}x
                                             </span>
-                                            <span class="font-semibold text-slate-800">{{ $item->menu->name }}</span>
+                                            <span class="font-bold text-slate-800">{{ $item->menu->name ?? 'Menu' }}</span>
                                         </div>
-                                        <span class="font-bold text-slate-900">
+                                        <span class="font-extrabold text-slate-900">
                                             Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
                                         </span>
                                     </div>
@@ -123,19 +135,21 @@
                         </div>
 
                         @if($order->notes)
-                            <div class="text-xs bg-amber-50/70 border border-amber-200/60 p-3 rounded-xl text-amber-900">
-                                <strong>Catatan untuk Kios:</strong> {{ $order->notes }}
+                            <div class="text-xs bg-amber-50/80 border border-amber-200/80 p-3.5 rounded-2xl text-amber-900">
+                                <span class="font-bold block mb-0.5">Catatan Pembeli:</span>
+                                "{{ $order->notes }}"
                             </div>
                         @endif
 
                         {{-- Total & Instructions --}}
                         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100">
-                            <p class="text-xs text-slate-500 text-center sm:text-left">
-                                💡 Cukup tunjukkan layar ini ke penjual saat jam istirahat.
+                            <p class="text-xs text-slate-500 text-center sm:text-left flex items-center gap-1.5">
+                                <svg class="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span>Cukup tunjukkan nomor nota ini ke penjual stand saat jam istirahat.</span>
                             </p>
                             <div class="text-right">
-                                <span class="text-xs text-slate-400">Total Harga:</span>
-                                <span class="text-lg font-black text-primary-800 ml-1">
+                                <span class="text-xs text-slate-400">Total Tagihan:</span>
+                                <span class="text-xl font-black text-primary-800 ml-1">
                                     Rp {{ number_format($order->total_price, 0, ',', '.') }}
                                 </span>
                             </div>
@@ -153,9 +167,9 @@
 @endsection
 
 @push('scripts')
-    {{-- Midtrans Snap JS --}}
     @php
-        $midtransSnapUrl = config('services.midtrans.is_production', false)
+        $isProd = filter_var(config('services.midtrans.is_production', false), FILTER_VALIDATE_BOOLEAN);
+        $midtransSnapUrl = $isProd
             ? 'https://app.midtrans.com/snap/snap.js'
             : 'https://app.sandbox.midtrans.com/snap/snap.js';
         $clientKey = config('services.midtrans.client_key');
@@ -164,7 +178,12 @@
 
     <script>
         function payWithSnap(snapToken) {
-            if (typeof snap !== 'undefined' && snapToken) {
+            if (!snapToken) {
+                alert('Token pembayaran tidak valid.');
+                return;
+            }
+
+            if (typeof snap !== 'undefined') {
                 snap.pay(snapToken, {
                     onSuccess: function(result) {
                         window.location.reload();
@@ -173,13 +192,16 @@
                         window.location.reload();
                     },
                     onError: function(result) {
-                        alert('Pembayaran gagal atau dibatalkan.');
+                        alert('Pembayaran gagal atau terjadi kesalahan.');
                         window.location.reload();
                     },
                     onClose: function() {
-                        // User closed without finishing
+                        // User closed the popup
                     }
                 });
+            } else {
+                console.warn('Midtrans Snap SDK is loading, retrying...');
+                setTimeout(() => payWithSnap(snapToken), 800);
             }
         }
 
@@ -190,7 +212,7 @@
             @if(isset($orders) && $orders->isNotEmpty())
                 @foreach($orders as $o)
                     if (payOrderId == '{{ $o->id }}' && '{{ $o->snap_token }}') {
-                        payWithSnap('{{ $o->snap_token }}');
+                        setTimeout(() => payWithSnap('{{ $o->snap_token }}'), 400);
                     }
                 @endforeach
             @endif

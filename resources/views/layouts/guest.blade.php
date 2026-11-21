@@ -30,7 +30,7 @@
             {{-- Institutional School Logo & Title --}}
             <div class="text-center mb-8">
                 <a href="{{ route('home') }}" class="inline-flex flex-col items-center group">
-                    <div class="w-20 h-20 rounded-2xl bg-white p-2 shadow-md border border-slate-200/80 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                    <div class="w-20 h-20 rounded-full bg-white p-1.5 shadow-lg shadow-primary-950/10 ring-2 ring-primary-100 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
                         <img src="{{ asset('images/logo-smecone.png') }}" alt="Logo SMECONE" class="w-full h-full object-contain">
                     </div>
                     <div class="mt-3">

@@ -12,8 +12,14 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'kiosk_id',
+        'order_code',
         'total_price',
         'status',
+        'payment_status',
+        'payment_type',
+        'snap_token',
+        'pickup_session',
+        'notes',
     ];
 
     protected $casts = [

@@ -122,10 +122,14 @@ class CartController extends Controller
                 ]);
             }
 
+            // Reload fresh relationships for Midtrans API payload
+            $order->load(['items.menu', 'user']);
+
             // Request Midtrans Snap Token
             $snapToken = $midtransService->createSnapToken($order);
             if ($snapToken) {
                 $order->update(['snap_token' => $snapToken]);
+                $order->snap_token = $snapToken;
             }
 
             $createdOrders[] = $order;
@@ -135,9 +139,9 @@ class CartController extends Controller
 
         // Pass created order and snap token to checkout page
         $firstOrder = $createdOrders[0] ?? null;
-        if ($firstOrder && $firstOrder->snap_token) {
+        if ($firstOrder) {
             return redirect()->route('orders.index', ['pay_order_id' => $firstOrder->id])
-                ->with('success', 'Pesanan dibuat! Silakan selesaikan pembayaran QRIS.');
+                ->with('success', 'Pesanan berhasil dibuat! Silakan selesaikan pembayaran QRIS.');
         }
 
         return redirect()->route('orders.index')

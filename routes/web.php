@@ -56,6 +56,7 @@ use App\Http\Controllers\Admin\SearchController;
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', fn() => redirect()->route('admin.dashboard'));
     Route::get('/search', [SearchController::class, 'index'])->name('search');
     Route::resource('kantins', AdminKantinController::class)->except(['show']);
     Route::resource('kiosks', AdminKioskController::class)->except(['show']);

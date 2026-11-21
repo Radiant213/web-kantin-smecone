@@ -84,20 +84,26 @@ class PaymentCallbackController extends Controller
         ]);
 
         // Dispatch real-time websocket event
-        \App\Events\OrderMasuk::dispatch($order);
+        try {
+            \App\Events\OrderMasuk::dispatch($order);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Broadcast OrderMasuk error: ' . $e->getMessage());
+        }
 
         // Push notification to Kiosk vendor
         try {
-            $kioskOwnerId = $order->kiosk->user_id;
-            $pushService = new \App\Services\WebPushService();
-            $pushService->sendToUser($kioskOwnerId, [
-                'title' => '🔔 Pesanan Lunas Baru Masuk!',
-                'body' => 'Pesanan #' . $order->order_code . ' (Rp ' . number_format($order->total_price, 0, ',', '.') . ') siap dimasak!',
-                'url' => route('penjual.orders.index'),
-                'tag' => 'order-' . $order->id,
-            ]);
-        } catch (Exception $e) {
-            \Illuminate\Support\Facades\Log::error('WebPush Error: ' . $e->getMessage());
+            if ($order->kiosk && $order->kiosk->user_id) {
+                $kioskOwnerId = $order->kiosk->user_id;
+                $pushService = new \App\Services\WebPushService();
+                $pushService->sendToUser($kioskOwnerId, [
+                    'title' => '🔔 Pesanan Lunas Baru Masuk!',
+                    'body' => 'Pesanan #' . $order->order_code . ' (Rp ' . number_format($order->total_price, 0, ',', '.') . ') siap dimasak!',
+                    'url' => route('penjual.orders.index'),
+                    'tag' => 'order-' . $order->id,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('WebPush Error: ' . $e->getMessage());
         }
     }
 }

@@ -226,21 +226,22 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({ order_code: orderCode })
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
+            .then(async res => {
+                const data = await res.json().catch(() => ({}));
+                if (res.ok && data.success) {
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Gagal simulasi pembayaran.');
+                    alert(data.error || data.message || ('Gagal simulasi pembayaran (Status: ' + res.status + ')'));
                 }
             })
             .catch(err => {
                 console.error(err);
-                alert('Terjadi kesalahan koneksi.');
+                alert('Terjadi kesalahan koneksi: ' + err.message);
             });
         }
 

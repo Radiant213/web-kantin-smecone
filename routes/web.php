@@ -76,6 +76,6 @@ Route::delete('/push-subscriptions', [\App\Http\Controllers\PushSubscriptionCont
 
 // Midtrans Webhook Callback & Sandbox Simulator
 Route::post('/midtrans/callback', [\App\Http\Controllers\PaymentCallbackController::class, 'handle'])->name('midtrans.callback');
-Route::post('/midtrans/simulate-payment', [\App\Http\Controllers\PaymentCallbackController::class, 'simulatePayment'])->middleware('auth')->name('midtrans.simulate');
+Route::post('/midtrans/simulate-payment', [\App\Http\Controllers\PaymentCallbackController::class, 'simulatePayment'])->name('midtrans.simulate');
 
 require __DIR__ . '/auth.php';

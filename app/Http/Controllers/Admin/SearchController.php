@@ -12,15 +12,15 @@ class SearchController extends Controller
 {
     public function index(Request $request)
     {
-        $query = $request->input('q');
+        $query = trim($request->input('q', ''));
 
-        if (empty($query)) {
-            return back()->with('error', 'Masukkan kata kunci pencarian.');
+        if ($query === '') {
+            return redirect()->route('admin.dashboard');
         }
 
-        $kantins = Kantin::where('name', 'like', "%{$query}%")->limit(5)->get();
-        $kiosks = Kiosk::where('name', 'like', "%{$query}%")->limit(5)->get();
-        $users = User::where('name', 'like', "%{$query}%")->orWhere('email', 'like', "%{$query}%")->limit(5)->get();
+        $kantins = Kantin::where('name', 'like', "%{$query}%")->limit(10)->get();
+        $kiosks = Kiosk::with('kantin')->where('name', 'like', "%{$query}%")->limit(10)->get();
+        $users = User::where('name', 'like', "%{$query}%")->orWhere('email', 'like', "%{$query}%")->limit(10)->get();
 
         return view('admin.search.index', compact('query', 'kantins', 'kiosks', 'users'));
     }

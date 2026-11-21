@@ -12,7 +12,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalRevenue = Order::where('status', 'completed')->sum('total_price');
+        $totalRevenue = Order::where('payment_status', 'paid')->sum('total_price');
         $totalOrders = Order::count();
         $activeKiosks = Kiosk::count();
         $totalUsers = User::where('role', 'pembeli')->count();

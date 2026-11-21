@@ -37,7 +37,6 @@
             x-transition:enter-end="opacity-100" x-transition:leave="transition-opacity ease-linear duration-300"
             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
             class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm lg:hidden"
-            style="display: none;"
             x-cloak></div>
 
         {{-- ═══ Sidebar (Left Column) ═══ --}}
@@ -156,7 +155,7 @@
 
         {{-- ═══ Center Main Content Area ═══ --}}
         <div class="flex-1 flex flex-col min-w-0">
-            {{-- Top Header (Clean Z-Index 30) --}}
+            {{-- Top Header --}}
             <header
                 class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 h-16 flex items-center justify-between px-4 lg:px-8 gap-4">
                 {{-- Mobile toggle --}}
@@ -185,7 +184,7 @@
                 <div class="ml-auto flex items-center gap-2 sm:gap-3">
 
                     {{-- Toggle Right Panel (Aktivitas & Info) --}}
-                    <button @click.stop="rightPanelOpen = !rightPanelOpen"
+                    <button @click="rightPanelOpen = !rightPanelOpen"
                         id="admin-panel-btn"
                         type="button"
                         class="p-2 text-slate-500 hover:text-red-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer"
@@ -199,7 +198,7 @@
 
                     {{-- Notification Dropdown --}}
                     <div class="relative" x-data="{ notifOpen: false }">
-                        <button @click.stop="notifOpen = !notifOpen"
+                        <button @click="notifOpen = !notifOpen"
                             id="admin-notif-btn"
                             type="button"
                             class="relative p-2 text-slate-500 hover:text-red-700 hover:bg-slate-100 rounded-xl transition-all cursor-pointer focus:outline-none"
@@ -216,7 +215,6 @@
                         <div x-show="notifOpen"
                             @click.outside="notifOpen = false"
                             id="admin-notif-menu"
-                            data-admin-dropdown
                             x-transition:enter="transition ease-out duration-150"
                             x-transition:enter-start="opacity-0 translate-y-1 scale-95"
                             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
@@ -224,7 +222,6 @@
                             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                             x-transition:leave-end="opacity-0 translate-y-1 scale-95"
                             class="absolute right-0 mt-2.5 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200/90 py-2 z-[999] ring-1 ring-slate-900/5 overflow-hidden"
-                            style="display: none;"
                             x-cloak>
                             <div class="px-4 py-2.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
                                 <div class="flex items-center gap-2">
@@ -257,9 +254,9 @@
                         </div>
                     </div>
 
-                    {{-- Administrator Profile Dropdown (Same Rock-Solid Pattern as app.blade.php) --}}
+                    {{-- Administrator Profile Dropdown --}}
                     <div class="relative" x-data="{ userDropdown: false }">
-                        <button @click.stop="userDropdown = !userDropdown"
+                        <button @click="userDropdown = !userDropdown"
                             id="admin-user-btn"
                             type="button"
                             class="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-full border border-slate-200/90 hover:border-red-200 hover:bg-slate-50 transition-all focus:outline-none focus:ring-2 focus:ring-red-500/20 cursor-pointer">
@@ -280,7 +277,6 @@
                         <div x-show="userDropdown"
                             @click.outside="userDropdown = false"
                             id="admin-user-menu"
-                            data-admin-dropdown
                             x-transition:enter="transition ease-out duration-150"
                             x-transition:enter-start="opacity-0 scale-95 -translate-y-2"
                             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
@@ -288,7 +284,6 @@
                             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                             x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
                             class="absolute right-0 mt-2.5 w-60 rounded-2xl shadow-2xl bg-white border border-slate-200/90 py-2 z-[999] ring-1 ring-slate-900/5 divide-y divide-slate-100"
-                            style="display: none;"
                             x-cloak>
 
                             {{-- User Identity Header --}}
@@ -355,7 +350,7 @@
             </main>
         </div>
 
-        {{-- ═══ Desktop Right Panel (Flex sibling column, NOT fixed, perfectly non-overlapping) ═══ --}}
+        {{-- ═══ Desktop Right Panel (Flex Sibling, only shown when rightPanelOpen = true) ═══ --}}
         <aside x-show="rightPanelOpen"
             id="admin-right-panel-desktop"
             x-transition:enter="transition ease-out duration-200"
@@ -364,8 +359,8 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 translate-x-0"
             x-transition:leave-end="opacity-0 translate-x-4"
-            class="hidden xl:flex flex-col w-80 bg-white border-l border-slate-200/80 p-5 overflow-y-auto flex-shrink-0"
-            style="display: none;">
+            class="flex flex-col w-80 bg-white border-l border-slate-200/80 p-5 overflow-y-auto flex-shrink-0"
+            x-cloak>
 
             {{-- Panel Header with Close Button --}}
             <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-100">
@@ -440,127 +435,7 @@
                 </div>
             @endif
         </aside>
-
-        {{-- ═══ Mobile Drawer (Only shown when rightPanelOpen on < xl screens) ═══ --}}
-        <div x-show="rightPanelOpen"
-            id="admin-right-panel-mobile"
-            class="relative z-50 xl:hidden"
-            style="display: none;"
-            x-cloak>
-            {{-- Mobile Backdrop --}}
-            <div x-show="rightPanelOpen"
-                @click="rightPanelOpen = false"
-                x-transition:enter="transition-opacity ease-linear duration-200"
-                x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100"
-                x-transition:leave="transition-opacity ease-linear duration-200"
-                x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0"
-                class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
-
-            {{-- Mobile Drawer Content --}}
-            <div class="fixed inset-y-0 right-0 w-80 bg-white shadow-2xl p-5 overflow-y-auto flex flex-col">
-                <div class="flex items-center justify-between pb-3.5 mb-5 border-b border-slate-100">
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span>
-                        <h3 class="font-bold text-sm text-slate-800">Panel Informasi</h3>
-                    </div>
-                    <button @click="rightPanelOpen = false"
-                        type="button"
-                        class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
-                        title="Tutup Panel">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-
-                {{-- Same content for mobile --}}
-                <div class="mb-6">
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Notifikasi</h4>
-                    <div class="space-y-2.5">
-                        @forelse(auth()->user()->unreadNotifications()->latest()->take(5)->get() as $notification)
-                            <div class="p-2 rounded-xl bg-slate-50 text-xs">
-                                <p class="font-semibold text-slate-800">{{ $notification->data['message'] ?? 'Notifikasi baru' }}</p>
-                                <span class="text-[10px] text-slate-400 mt-1 block">{{ $notification->created_at->diffForHumans() }}</span>
-                            </div>
-                        @empty
-                            <p class="text-xs text-slate-400 italic">Belum ada notifikasi baru.</p>
-                        @endforelse
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Aktivitas Terakhir</h4>
-                    <div class="space-y-2.5">
-                        @forelse(\App\Models\ActivityLog::with('user')->latest()->take(5)->get() as $activity)
-                            <div class="p-2 rounded-xl bg-slate-50 text-xs">
-                                <p class="text-slate-700">
-                                    @if($activity->user)<strong class="text-slate-900">{{ $activity->user->name }}:</strong>@endif
-                                    {{ $activity->description }}
-                                </p>
-                                <span class="text-[10px] text-slate-400 mt-1 block">{{ $activity->created_at->diffForHumans() }}</span>
-                            </div>
-                        @empty
-                            <p class="text-xs text-slate-400 italic">Belum ada aktivitas tercatat.</p>
-                        @endforelse
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-
-    {{-- Fallback Vanilla JS for 100% Guaranteed Dropdown & Toggle Operations --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function setupDropdown(btnId, menuId) {
-                const btn = document.getElementById(btnId);
-                const menu = document.getElementById(menuId);
-                if (!btn || !menu) return;
-
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const isHidden = menu.style.display === 'none' || menu.classList.contains('hidden');
-                    // Close other admin dropdowns
-                    document.querySelectorAll('[data-admin-dropdown]').forEach(function(d) {
-                        if (d !== menu) d.style.display = 'none';
-                    });
-                    if (isHidden) {
-                        menu.style.display = 'block';
-                        menu.classList.remove('hidden');
-                    } else {
-                        menu.style.display = 'none';
-                        menu.classList.add('hidden');
-                    }
-                });
-
-                document.addEventListener('click', function(e) {
-                    if (!menu.contains(e.target) && !btn.contains(e.target)) {
-                        menu.style.display = 'none';
-                    }
-                });
-            }
-
-            // Bind User Profile and Notification dropdowns
-            setupDropdown('admin-user-btn', 'admin-user-menu');
-            setupDropdown('admin-notif-btn', 'admin-notif-menu');
-
-            // Bind Right Panel toggle button for desktop/mobile
-            const panelBtn = document.getElementById('admin-panel-btn');
-            const rightPanelDesktop = document.getElementById('admin-right-panel-desktop');
-            const rightPanelMobile = document.getElementById('admin-right-panel-mobile');
-
-            if (panelBtn) {
-                panelBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const isDesktop = window.innerWidth >= 1280;
-                    const target = isDesktop ? rightPanelDesktop : rightPanelMobile;
-                    if (target) {
-                        const isHidden = target.style.display === 'none' || target.classList.contains('hidden');
-                        target.style.display = isHidden ? (isDesktop ? 'flex' : 'block') : 'none';
-                    }
-                });
-            }
-        });
-    </script>
 
     @stack('scripts')
 </body>

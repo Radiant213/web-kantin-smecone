@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->foreignId('menu_id')->constrained('menus')->cascadeOnDelete();
             $table->integer('quantity')->default(1);
             $table->decimal('price', 10, 2);
+            $table->string('notes')->nullable();
             $table->timestamps();
         });
     }

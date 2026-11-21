@@ -242,7 +242,14 @@
                                                 <span class="w-6 h-6 rounded-lg bg-primary-100 text-primary-800 font-extrabold text-xs flex items-center justify-center flex-shrink-0">
                                                     {{ $item->quantity }}x
                                                 </span>
-                                                <span class="font-bold text-slate-800 truncate">{{ $item->menu->name ?? 'Menu' }}</span>
+                                                <div class="min-w-0">
+                                                    <span class="font-bold text-slate-800 truncate block">{{ $item->menu->name ?? 'Menu' }}</span>
+                                                    @if($item->notes)
+                                                        <span class="text-[11px] text-amber-800 bg-amber-100/70 font-semibold px-2 py-0.5 rounded border border-amber-200 block mt-0.5">
+                                                            ↳ {{ $item->notes }}
+                                                        </span>
+                                                    @endif
+                                                </div>
                                             </div>
                                             <span class="text-xs font-semibold text-slate-500 flex-shrink-0 ml-2">
                                                 Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}

@@ -134,13 +134,20 @@
                             <div class="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden bg-white shadow-xs">
                                 @foreach($order->items as $item)
                                     <div class="flex items-center justify-between p-3.5 text-xs">
-                                        <div class="flex items-center gap-2.5">
-                                            <span class="font-black text-primary-800 bg-primary-50 px-2 py-0.5 rounded-lg border border-primary-200">
+                                        <div class="flex items-center gap-2.5 min-w-0">
+                                            <span class="font-black text-primary-800 bg-primary-50 px-2 py-0.5 rounded-lg border border-primary-200 flex-shrink-0">
                                                 {{ $item->quantity }}x
                                             </span>
-                                            <span class="font-bold text-slate-800">{{ $item->menu->name ?? 'Menu' }}</span>
+                                            <div class="min-w-0">
+                                                <span class="font-bold text-slate-800 truncate block">{{ $item->menu->name ?? 'Menu' }}</span>
+                                                @if($item->notes)
+                                                    <span class="text-[11px] text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60 block mt-0.5">
+                                                        ↳ {{ $item->notes }}
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <span class="font-extrabold text-slate-900">
+                                        <span class="font-extrabold text-slate-900 flex-shrink-0 ml-2">
                                             Rp {{ number_format($item->price * $item->quantity, 0, ',', '.') }}
                                         </span>
                                     </div>

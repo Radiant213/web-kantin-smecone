@@ -30,7 +30,7 @@ Route::middleware(['auth'])->group(function () {
     // Cart
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-    Route::delete('/cart/remove/{menuId}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::delete('/cart/remove/{key}', [CartController::class, 'remove'])->name('cart.remove');
     Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
     // Orders

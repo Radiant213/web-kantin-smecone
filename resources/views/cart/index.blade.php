@@ -56,8 +56,18 @@
                                     {{ $item['menu']->kiosk->name ?? 'Kios Kantin' }}
                                 </span>
                                 <h3 class="font-extrabold text-sm sm:text-base text-slate-900 truncate mt-1">{{ $item['menu']->name }}</h3>
+                                
+                                @if(!empty($item['notes']))
+                                    <p class="text-xs text-amber-800 bg-amber-50 rounded-lg px-2.5 py-1 mt-1 border border-amber-200/70 block font-medium">
+                                        ↳ {{ $item['notes'] }}
+                                    </p>
+                                @endif
+
                                 <p class="text-xs sm:text-sm font-black text-primary-800 mt-1">
                                     Rp {{ number_format($item['subtotal'], 0, ',', '.') }}
+                                    @if($item['quantity'] > 1)
+                                        <span class="text-[11px] text-slate-400 font-normal">(@ Rp {{ number_format($item['price'], 0, ',', '.') }})</span>
+                                    @endif
                                 </p>
                             </div>
 
@@ -66,7 +76,7 @@
                                 <span class="bg-slate-100 px-2.5 py-1 rounded-lg text-xs font-black text-slate-700">
                                     {{ $item['quantity'] }}x
                                 </span>
-                                <form method="POST" action="{{ route('cart.remove', $item['menu']->id) }}">
+                                <form method="POST" action="{{ route('cart.remove', $item['key']) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" title="Hapus dari baki"

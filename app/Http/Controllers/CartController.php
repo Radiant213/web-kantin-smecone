@@ -15,13 +15,22 @@ class CartController extends Controller
         $items = [];
         $total = 0;
 
-        foreach ($cart as $menuId => $qty) {
+        foreach ($cart as $key => $cartItem) {
+            $menuId = is_array($cartItem) ? ($cartItem['menu_id'] ?? null) : $key;
+            $qty = is_array($cartItem) ? ($cartItem['quantity'] ?? 1) : $cartItem;
+            $unitPrice = is_array($cartItem) && isset($cartItem['price']) ? (int)$cartItem['price'] : null;
+            $notes = is_array($cartItem) ? ($cartItem['notes'] ?? null) : null;
+
             $menu = Menu::with('kiosk.kantin')->find($menuId);
             if ($menu) {
-                $subtotal = $menu->price * $qty;
+                $finalPrice = $unitPrice ?? $menu->price;
+                $subtotal = $finalPrice * $qty;
                 $items[] = [
+                    'key' => (string)$key,
                     'menu' => $menu,
                     'quantity' => $qty,
+                    'price' => $finalPrice,
+                    'notes' => $notes,
                     'subtotal' => $subtotal,
                 ];
                 $total += $subtotal;
@@ -35,17 +44,32 @@ class CartController extends Controller
     {
         $request->validate([
             'menu_id' => 'required|exists:menus,id',
-            'quantity' => 'integer|min:1',
+            'quantity' => 'nullable|integer|min:1',
+            'custom_price' => 'nullable|integer|min:1000',
+            'notes' => 'nullable|string|max:500',
         ]);
 
-        $cart = session()->get('cart', []);
-        $menuId = $request->menu_id;
-        $qty = $request->quantity ?? 1;
+        $menu = Menu::findOrFail($request->menu_id);
+        $qty = (int)($request->quantity ?? 1);
+        $customPrice = $request->filled('custom_price') ? (int)$request->custom_price : $menu->price;
+        $notes = $request->filled('notes') ? trim($request->notes) : null;
 
-        if (isset($cart[$menuId])) {
-            $cart[$menuId] += $qty;
+        $cart = session()->get('cart', []);
+        
+        // Generate unique key based on menu id, price, and customization notes
+        $hash = substr(md5($customPrice . '_' . ($notes ?? '')), 0, 8);
+        $cartKey = 'item_' . $menu->id . '_' . $hash;
+
+        if (isset($cart[$cartKey]) && is_array($cart[$cartKey])) {
+            $cart[$cartKey]['quantity'] += $qty;
         } else {
-            $cart[$menuId] = $qty;
+            $cart[$cartKey] = [
+                'key' => $cartKey,
+                'menu_id' => $menu->id,
+                'quantity' => $qty,
+                'price' => $customPrice,
+                'notes' => $notes,
+            ];
         }
 
         session()->put('cart', $cart);
@@ -53,10 +77,10 @@ class CartController extends Controller
         return back()->with('success', 'Menu berhasil ditambahkan ke baki pesanan!');
     }
 
-    public function remove($menuId)
+    public function remove($key)
     {
         $cart = session()->get('cart', []);
-        unset($cart[$menuId]);
+        unset($cart[$key]);
         session()->put('cart', $cart);
 
         return back()->with('success', 'Item dihapus dari keranjang.');
@@ -77,9 +101,15 @@ class CartController extends Controller
 
         // Group items by kiosk
         $kioskOrders = [];
-        foreach ($cart as $menuId => $qty) {
+        foreach ($cart as $key => $cartItem) {
+            $menuId = is_array($cartItem) ? ($cartItem['menu_id'] ?? null) : $key;
+            $qty = is_array($cartItem) ? ($cartItem['quantity'] ?? 1) : $cartItem;
+            $unitPrice = is_array($cartItem) && isset($cartItem['price']) ? (int)$cartItem['price'] : null;
+            $itemNotes = is_array($cartItem) ? ($cartItem['notes'] ?? null) : null;
+
             $menu = Menu::find($menuId);
             if ($menu) {
+                $price = $unitPrice ?? $menu->price;
                 $kioskId = $menu->kiosk_id;
                 if (!isset($kioskOrders[$kioskId])) {
                     $kioskOrders[$kioskId] = [];
@@ -87,6 +117,8 @@ class CartController extends Controller
                 $kioskOrders[$kioskId][] = [
                     'menu' => $menu,
                     'quantity' => $qty,
+                    'price' => $price,
+                    'notes' => $itemNotes,
                 ];
             }
         }
@@ -97,7 +129,7 @@ class CartController extends Controller
         foreach ($kioskOrders as $kioskId => $items) {
             $totalPrice = 0;
             foreach ($items as $item) {
-                $totalPrice += $item['menu']->price * $item['quantity'];
+                $totalPrice += $item['price'] * $item['quantity'];
             }
 
             // Generate clean school order code
@@ -118,7 +150,8 @@ class CartController extends Controller
                 $order->items()->create([
                     'menu_id' => $item['menu']->id,
                     'quantity' => $item['quantity'],
-                    'price' => $item['menu']->price,
+                    'price' => $item['price'],
+                    'notes' => $item['notes'],
                 ]);
             }
 

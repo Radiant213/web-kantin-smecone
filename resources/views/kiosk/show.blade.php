@@ -99,6 +99,11 @@
         @else
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($kiosk->menus as $menu)
+                    @php
+                        $lowerName = strtolower($menu->name);
+                        $isCimol = str_contains($lowerName, 'cimol');
+                        $isSeblak = str_contains($lowerName, 'seblak') && !str_contains($lowerName, 'kering');
+                    @endphp
                     <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group">
                         {{-- Image / Placeholder --}}
                         <div class="relative h-48 bg-slate-100 overflow-hidden">
@@ -116,9 +121,19 @@
                             @endif
 
                             <div class="absolute top-3 left-3">
-                                <span class="bg-white/95 backdrop-blur-sm text-slate-800 text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm border border-slate-100">
-                                    Fresh Cooked
-                                </span>
+                                @if($isCimol)
+                                    <span class="bg-amber-400 text-slate-900 text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-sm">
+                                        Bebas Request Porsi
+                                    </span>
+                                @elseif($isSeblak)
+                                    <span class="bg-rose-500 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-sm">
+                                        Bisa Pilih Topping
+                                    </span>
+                                @else
+                                    <span class="bg-white/95 backdrop-blur-sm text-slate-800 text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm border border-slate-100">
+                                        Fresh Cooked
+                                    </span>
+                                @endif
                             </div>
                         </div>
 
@@ -140,25 +155,53 @@
 
                             <div class="mt-auto pt-4 flex items-center justify-between border-t border-slate-100">
                                 <div>
-                                    <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Harga</p>
-                                    <p class="text-lg font-extrabold text-primary-700">
-                                        {{ $menu->formattedPrice() }}
-                                    </p>
+                                    @if($isCimol)
+                                        <p class="text-[10px] uppercase font-bold text-amber-600 tracking-wider">Fleksibel</p>
+                                        <p class="text-base sm:text-lg font-extrabold text-amber-700">
+                                            Mulai Rp 2.000
+                                        </p>
+                                    @elseif($isSeblak)
+                                        <p class="text-[10px] uppercase font-bold text-rose-600 tracking-wider">Custom Topping</p>
+                                        <p class="text-base sm:text-lg font-extrabold text-rose-700">
+                                            Mulai Rp 5.000
+                                        </p>
+                                    @else
+                                        <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Harga</p>
+                                        <p class="text-lg font-extrabold text-primary-700">
+                                            {{ $menu->formattedPrice() }}
+                                        </p>
+                                    @endif
                                 </div>
 
                                 @auth
-                                    <form method="POST" action="{{ route('cart.add') }}">
-                                        @csrf
-                                        <input type="hidden" name="menu_id" value="{{ $menu->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit"
-                                            class="inline-flex items-center gap-1.5 bg-primary-700 hover:bg-primary-800 active:bg-primary-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm shadow-primary-700/20 active:scale-95">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                                            </svg>
-                                            Tambah
+                                    @if($isCimol)
+                                        <button type="button"
+                                            onclick="openCimolModal({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }})"
+                                            class="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all shadow-sm shadow-amber-500/20">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                                            Atur Porsi
                                         </button>
-                                    </form>
+                                    @elseif($isSeblak)
+                                        <button type="button"
+                                            onclick="openSeblakModal({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }})"
+                                            class="inline-flex items-center gap-1.5 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 active:scale-95 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all shadow-sm shadow-rose-600/20">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                                            Racik Topping
+                                        </button>
+                                    @else
+                                        <form method="POST" action="{{ route('cart.add') }}">
+                                            @csrf
+                                            <input type="hidden" name="menu_id" value="{{ $menu->id }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit"
+                                                class="inline-flex items-center gap-1.5 bg-primary-700 hover:bg-primary-800 active:bg-primary-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm shadow-primary-700/20 active:scale-95">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                Tambah
+                                            </button>
+                                        </form>
+                                    @endif
                                 @else
                                     <a href="{{ route('login') }}"
                                         class="inline-flex items-center gap-1.5 bg-primary-700 hover:bg-primary-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm">
@@ -172,4 +215,361 @@
             </div>
         @endif
     </div>
+
+    {{-- ═══ Modal Kustomisasi Cimol ═══ --}}
+    <div id="cimolModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="relative bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden transform transition-all my-8">
+            {{-- Modal Header --}}
+            <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-5 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center font-black text-lg">
+                        🍡
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base leading-tight" id="cimolModalTitle">Kustomisasi Porsi Cimol</h3>
+                        <p class="text-[11px] text-amber-100 mt-0.5">Mulai Rp 2.000 &bull; Kelipatan Rp 1.000</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeCimolModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            {{-- Modal Form --}}
+            <form method="POST" action="{{ route('cart.add') }}" class="p-6 space-y-5" onsubmit="return submitCimolForm(this)">
+                @csrf
+                <input type="hidden" name="menu_id" id="cimolMenuId" value="">
+                <input type="hidden" name="quantity" value="1">
+                <input type="hidden" name="custom_price" id="cimolFinalPrice" value="2000">
+                <input type="hidden" name="notes" id="cimolFinalNotes" value="">
+
+                {{-- Nominal Porsi --}}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                        1. Tentukan Nominal Porsi (Rp):
+                    </label>
+                    <div class="grid grid-cols-3 gap-2 mb-3">
+                        <button type="button" onclick="selectCimolPrice(2000)" class="cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-amber-500 bg-amber-50 text-amber-900 ring-1 ring-amber-400" data-price="2000">Rp 2.000</button>
+                        <button type="button" onclick="selectCimolPrice(3000)" class="cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-slate-200 hover:bg-slate-50 text-slate-700" data-price="3000">Rp 3.000</button>
+                        <button type="button" onclick="selectCimolPrice(4000)" class="cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-slate-200 hover:bg-slate-50 text-slate-700" data-price="4000">Rp 4.000</button>
+                        <button type="button" onclick="selectCimolPrice(5000)" class="cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-slate-200 hover:bg-slate-50 text-slate-700" data-price="5000">Rp 5.000</button>
+                        <button type="button" onclick="selectCimolPrice(7000)" class="cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-slate-200 hover:bg-slate-50 text-slate-700" data-price="7000">Rp 7.000</button>
+                        <button type="button" onclick="selectCimolPrice(10000)" class="cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-slate-200 hover:bg-slate-50 text-slate-700" data-price="10000">Rp 10.000</button>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-400">Rp</span>
+                        <input type="number" id="cimolCustomInput" min="2000" step="1000" value="2000" oninput="onCimolCustomInput(this.value)" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500" placeholder="Ketik nominal kustom...">
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Harus kelipatan Rp 1.000 (contoh: 2000, 3000, 5000, 6000).</p>
+                </div>
+
+                {{-- Bumbu Tabur --}}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                        2. Pilih Bumbu Tabur (Boleh Campur):
+                    </label>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-amber-50 has-[:checked]:border-amber-400">
+                            <input type="checkbox" value="Balado Pedas Manis" class="cimol-seasoning text-amber-600 rounded focus:ring-amber-500" checked onchange="updateCimolSummary()">
+                            <span class="font-semibold text-slate-800">Balado</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-amber-50 has-[:checked]:border-amber-400">
+                            <input type="checkbox" value="Asin / Gurih" class="cimol-seasoning text-amber-600 rounded focus:ring-amber-500" checked onchange="updateCimolSummary()">
+                            <span class="font-semibold text-slate-800">Asin / Gurih</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-amber-50 has-[:checked]:border-amber-400">
+                            <input type="checkbox" value="Pedas Cabai Bubuk" class="cimol-seasoning text-amber-600 rounded focus:ring-amber-500" onchange="updateCimolSummary()">
+                            <span class="font-semibold text-slate-800">Cabai Bubuk</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-amber-50 has-[:checked]:border-amber-400">
+                            <input type="checkbox" value="Keju Manis" class="cimol-seasoning text-amber-600 rounded focus:ring-amber-500" onchange="updateCimolSummary()">
+                            <span class="font-semibold text-slate-800">Keju Manis</span>
+                        </label>
+                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-amber-50 has-[:checked]:border-amber-400 col-span-2">
+                            <input type="checkbox" value="Jagung Manis" class="cimol-seasoning text-amber-600 rounded focus:ring-amber-500" onchange="updateCimolSummary()">
+                            <span class="font-semibold text-slate-800">Jagung Manis</span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Catatan Khusus --}}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        3. Catatan Khusus (Opsional):
+                    </label>
+                    <input type="text" id="cimolExtraNote" placeholder="Contoh: bumbu dipisah, jangan terlalu pedas..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:border-amber-500 focus:ring-1 focus:ring-amber-500" oninput="updateCimolSummary()">
+                </div>
+
+                {{-- Total & Submit --}}
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Total Harga</span>
+                        <span class="text-xl font-black text-amber-600" id="cimolDisplayTotal">Rp 2.000</span>
+                    </div>
+                    <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-extrabold text-xs px-5 py-3 rounded-2xl shadow-md shadow-amber-500/20 active:scale-95 transition-all">
+                        <span>Masukkan Baki</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- ═══ Modal Kustomisasi Seblak ═══ --}}
+    <div id="seblakModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="relative bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden transform transition-all my-8">
+            {{-- Modal Header --}}
+            <div class="bg-gradient-to-r from-rose-600 to-rose-700 p-5 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center font-black text-lg">
+                        🍲
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base leading-tight" id="seblakModalTitle">Racik Seblak Bandung</h3>
+                        <p class="text-[11px] text-rose-100 mt-0.5">Dasar Rp 5.000 (Kerupuk basah + bumbu kencur gurih)</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeSeblakModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            {{-- Modal Form --}}
+            <form method="POST" action="{{ route('cart.add') }}" class="p-6 space-y-5" onsubmit="return submitSeblakForm(this)">
+                @csrf
+                <input type="hidden" name="menu_id" id="seblakMenuId" value="">
+                <input type="hidden" name="quantity" value="1">
+                <input type="hidden" name="custom_price" id="seblakFinalPrice" value="5000">
+                <input type="hidden" name="notes" id="seblakFinalNotes" value="">
+
+                {{-- 1. Level Pedas --}}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                        1. Pilih Level Pedas:
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <label class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-center has-[:checked]:bg-rose-50 has-[:checked]:border-rose-500 has-[:checked]:text-rose-900">
+                            <input type="radio" name="seblak_level" value="Level 0 (Gurih Tidak Pedas)" class="sr-only" onchange="updateSeblakTotal()">
+                            <span class="font-bold">Level 0</span>
+                            <span class="text-[10px] text-slate-400 mt-0.5">Gurih/Ori</span>
+                        </label>
+                        <label class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-center has-[:checked]:bg-rose-50 has-[:checked]:border-rose-500 has-[:checked]:text-rose-900">
+                            <input type="radio" name="seblak_level" value="Level 1 (Pedas Sedang)" checked class="sr-only" onchange="updateSeblakTotal()">
+                            <span class="font-bold text-rose-600">Level 1 🌶️</span>
+                            <span class="text-[10px] text-slate-400 mt-0.5">Sedang</span>
+                        </label>
+                        <label class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-center has-[:checked]:bg-rose-50 has-[:checked]:border-rose-500 has-[:checked]:text-rose-900">
+                            <input type="radio" name="seblak_level" value="Level 2 (Pedas Nampol)" class="sr-only" onchange="updateSeblakTotal()">
+                            <span class="font-bold text-rose-700">Level 2 🌶️🌶️</span>
+                            <span class="text-[10px] text-slate-400 mt-0.5">Nampol</span>
+                        </label>
+                        <label class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer text-center has-[:checked]:bg-rose-50 has-[:checked]:border-rose-500 has-[:checked]:text-rose-900">
+                            <input type="radio" name="seblak_level" value="Level 3 (Ekstra Jebew)" class="sr-only" onchange="updateSeblakTotal()">
+                            <span class="font-bold text-rose-900">Level 3 🔥</span>
+                            <span class="text-[10px] text-slate-400 mt-0.5">Jebew</span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- 2. Topping Pilihan --}}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                        2. Tambah Topping Favorit:
+                    </label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-rose-50 has-[:checked]:border-rose-400">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" value="Mie Kuning" data-price="2000" class="seblak-topping text-rose-600 rounded focus:ring-rose-500" onchange="updateSeblakTotal()">
+                                <span class="font-semibold text-slate-800">+ Mie Kuning</span>
+                            </div>
+                            <span class="font-bold text-slate-500">+Rp 2.000</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-rose-50 has-[:checked]:border-rose-400">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" value="Kwetiau" data-price="2000" class="seblak-topping text-rose-600 rounded focus:ring-rose-500" onchange="updateSeblakTotal()">
+                                <span class="font-semibold text-slate-800">+ Kwetiau</span>
+                            </div>
+                            <span class="font-bold text-slate-500">+Rp 2.000</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-rose-50 has-[:checked]:border-rose-400">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" value="Makaroni" data-price="2000" class="seblak-topping text-rose-600 rounded focus:ring-rose-500" onchange="updateSeblakTotal()">
+                                <span class="font-semibold text-slate-800">+ Makaroni</span>
+                            </div>
+                            <span class="font-bold text-slate-500">+Rp 2.000</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-rose-50 has-[:checked]:border-rose-400">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" value="Telur Kocok" data-price="3000" class="seblak-topping text-rose-600 rounded focus:ring-rose-500" onchange="updateSeblakTotal()">
+                                <span class="font-semibold text-slate-800">+ Telur Kocok</span>
+                            </div>
+                            <span class="font-bold text-slate-500">+Rp 3.000</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-rose-50 has-[:checked]:border-rose-400">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" value="Sosis Sapi" data-price="2000" class="seblak-topping text-rose-600 rounded focus:ring-rose-500" onchange="updateSeblakTotal()">
+                                <span class="font-semibold text-slate-800">+ Sosis Sapi</span>
+                            </div>
+                            <span class="font-bold text-slate-500">+Rp 2.000</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-rose-50 has-[:checked]:border-rose-400">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" value="Bakso Sapi" data-price="2000" class="seblak-topping text-rose-600 rounded focus:ring-rose-500" onchange="updateSeblakTotal()">
+                                <span class="font-semibold text-slate-800">+ Bakso Sapi</span>
+                            </div>
+                            <span class="font-bold text-slate-500">+Rp 2.000</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer has-[:checked]:bg-rose-50 has-[:checked]:border-rose-400 col-span-1 sm:col-span-2">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" value="Sayur Sawi" data-price="1000" class="seblak-topping text-rose-600 rounded focus:ring-rose-500" onchange="updateSeblakTotal()">
+                                <span class="font-semibold text-slate-800">+ Sayur Sawi Hijau</span>
+                            </div>
+                            <span class="font-bold text-slate-500">+Rp 1.000</span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- 3. Catatan Khusus --}}
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        3. Catatan Khusus (Opsional):
+                    </label>
+                    <input type="text" id="seblakExtraNote" placeholder="Contoh: kuah nyemek, kuah banjir, jangan daun bawang..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:border-rose-500 focus:ring-1 focus:ring-rose-500" oninput="updateSeblakTotal()">
+                </div>
+
+                {{-- Total & Submit --}}
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Total Harga</span>
+                        <span class="text-xl font-black text-rose-600" id="seblakDisplayTotal">Rp 5.000</span>
+                    </div>
+                    <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white font-extrabold text-xs px-5 py-3 rounded-2xl shadow-md shadow-rose-600/20 active:scale-95 transition-all">
+                        <span>Masukkan Baki</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ═══ Cimol Modal Logic ═══
+        let currentCimolPrice = 2000;
+        function openCimolModal(menuId, menuName, basePrice) {
+            document.getElementById('cimolMenuId').value = menuId;
+            document.getElementById('cimolModalTitle').textContent = 'Kustomisasi: ' + menuName;
+            selectCimolPrice(2000);
+            document.getElementById('cimolExtraNote').value = '';
+            document.getElementById('cimolModal').classList.remove('hidden');
+        }
+        function closeCimolModal() {
+            document.getElementById('cimolModal').classList.add('hidden');
+        }
+        function selectCimolPrice(price) {
+            currentCimolPrice = parseInt(price);
+            document.getElementById('cimolCustomInput').value = currentCimolPrice;
+            document.querySelectorAll('.cimol-price-btn').forEach(btn => {
+                if (parseInt(btn.dataset.price) === currentCimolPrice) {
+                    btn.className = 'cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-amber-500 bg-amber-50 text-amber-900 ring-1 ring-amber-400';
+                } else {
+                    btn.className = 'cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-slate-200 hover:bg-slate-50 text-slate-700';
+                }
+            });
+            updateCimolSummary();
+        }
+        function onCimolCustomInput(val) {
+            let p = parseInt(val) || 2000;
+            if (p < 2000) p = 2000;
+            currentCimolPrice = p;
+            document.querySelectorAll('.cimol-price-btn').forEach(btn => {
+                if (parseInt(btn.dataset.price) === currentCimolPrice) {
+                    btn.className = 'cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-amber-500 bg-amber-50 text-amber-900 ring-1 ring-amber-400';
+                } else {
+                    btn.className = 'cimol-price-btn py-2 px-3 rounded-xl border text-xs font-bold transition-all border-slate-200 hover:bg-slate-50 text-slate-700';
+                }
+            });
+            updateCimolSummary();
+        }
+        function updateCimolSummary() {
+            document.getElementById('cimolFinalPrice').value = currentCimolPrice;
+            document.getElementById('cimolDisplayTotal').textContent = 'Rp ' + currentCimolPrice.toLocaleString('id-ID');
+            
+            const seasonings = [];
+            document.querySelectorAll('.cimol-seasoning:checked').forEach(cb => seasonings.push(cb.value));
+            const extra = document.getElementById('cimolExtraNote').value.trim();
+            
+            let notesArr = [];
+            notesArr.push('Porsi: Rp ' + currentCimolPrice.toLocaleString('id-ID'));
+            if (seasonings.length > 0) {
+                notesArr.push('Bumbu: ' + seasonings.join(', '));
+            } else {
+                notesArr.push('Bumbu: Polos');
+            }
+            if (extra) {
+                notesArr.push('Catatan: ' + extra);
+            }
+            document.getElementById('cimolFinalNotes').value = notesArr.join(' | ');
+        }
+        function submitCimolForm(form) {
+            const val = parseInt(document.getElementById('cimolCustomInput').value);
+            if (isNaN(val) || val < 2000 || val % 1000 !== 0) {
+                alert('Nominal porsi minimal Rp 2.000 dan harus kelipatan Rp 1.000!');
+                return false;
+            }
+            updateCimolSummary();
+            return true;
+        }
+
+        // ═══ Seblak Modal Logic ═══
+        let baseSeblakPrice = 5000;
+        function openSeblakModal(menuId, menuName, basePrice) {
+            document.getElementById('seblakMenuId').value = menuId;
+            document.getElementById('seblakModalTitle').textContent = 'Racik: ' + menuName;
+            baseSeblakPrice = basePrice || 5000;
+            document.querySelectorAll('.seblak-topping').forEach(cb => cb.checked = false);
+            document.getElementById('seblakExtraNote').value = '';
+            updateSeblakTotal();
+            document.getElementById('seblakModal').classList.remove('hidden');
+        }
+        function closeSeblakModal() {
+            document.getElementById('seblakModal').classList.add('hidden');
+        }
+        function updateSeblakTotal() {
+            let total = baseSeblakPrice;
+            const selectedToppings = [];
+            document.querySelectorAll('.seblak-topping:checked').forEach(cb => {
+                total += parseInt(cb.dataset.price);
+                selectedToppings.push(cb.value);
+            });
+
+            const selectedLevel = document.querySelector('input[name="seblak_level"]:checked')?.value || 'Level 1 (Pedas Sedang)';
+            const extra = document.getElementById('seblakExtraNote').value.trim();
+
+            document.getElementById('seblakFinalPrice').value = total;
+            document.getElementById('seblakDisplayTotal').textContent = 'Rp ' + total.toLocaleString('id-ID');
+
+            let notesArr = [selectedLevel];
+            if (selectedToppings.length > 0) {
+                notesArr.push('Topping: ' + selectedToppings.join(', '));
+            } else {
+                notesArr.push('Topping: Kerupuk Saja');
+            }
+            if (extra) {
+                notesArr.push('Catatan: ' + extra);
+            }
+            document.getElementById('seblakFinalNotes').value = notesArr.join(' | ');
+        }
+        function submitSeblakForm(form) {
+            updateSeblakTotal();
+            return true;
+        }
+
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeCimolModal();
+                closeSeblakModal();
+            }
+        });
+    </script>
 @endsection
